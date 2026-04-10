@@ -8,6 +8,7 @@ import {
 import TutoModal from '../components/TutoModal'
 import ProductCard from '../components/ProductCard'
 import { getProductById, getRelatedProducts } from '../data/products'
+import { useShopifyCart } from '../hooks/useShopifyCart'
 
 /* ─── Couleurs par type ─── */
 const ACCENT = {
@@ -86,6 +87,7 @@ export default function ProductPage() {
   const [cameraSelected, setCameraSelected] = useState(false)
   const [addedToCart, setAddedToCart]       = useState(false)
   const [tutoOpen, setTutoOpen]             = useState(false)
+  const { addToCart, loading: cartLoading, error: cartError } = useShopifyCart()
 
   /* Produit introuvable */
   if (!product) {
@@ -108,9 +110,14 @@ export default function ProductPage() {
   const related = getRelatedProducts(product)
   const totalPrix = product.prix + (cameraSelected && product.cameraOption ? product.cameraOption.prix : 0)
 
-  const handleAddToCart = () => {
-    setAddedToCart(true)
-    setTimeout(() => setAddedToCart(false), 2200)
+  const handleAddToCart = async () => {
+    if (product.shopifyHandle) {
+      await addToCart(product, true)
+    } else {
+      // Fallback visuel si shopifyHandle n'est pas encore rempli
+      setAddedToCart(true)
+      setTimeout(() => setAddedToCart(false), 2200)
+    }
   }
 
   return (
@@ -266,14 +273,23 @@ export default function ProductPage() {
             </div>
 
             {/* CTA */}
+            {cartError && (
+              <p className="font-body text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-2">
+                {cartError}
+              </p>
+            )}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: cartLoading ? 1 : 1.02 }}
+                whileTap={{ scale: cartLoading ? 1 : 0.97 }}
                 onClick={handleAddToCart}
-                className="flex-1 flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-base text-black transition-all"
+                disabled={cartLoading}
+                className="flex-1 flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-base text-black transition-all disabled:opacity-70 disabled:cursor-wait"
                 style={{ background: addedToCart ? 'linear-gradient(135deg,#10b981,#059669)' : acc.gradient }}
               >
-                {addedToCart ? (
+                {cartLoading ? (
+                  <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Redirection…</>
+                ) : addedToCart ? (
                   <><Check size={18} strokeWidth={3} /> Ajouté au panier</>
                 ) : (
                   <><ShoppingCart size={18} /> Ajouter au panier — {totalPrix.toFixed(2)}€</>
