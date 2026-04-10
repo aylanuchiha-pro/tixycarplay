@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/aylanuchiha/Téléchargements/tixycars\\\\\\(1\\\\\\)/**)",
+      "Bash(npx vite:*)"
+    ]
+  }
+}
