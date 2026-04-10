@@ -6,7 +6,7 @@ import SectionTitle from '../components/SectionTitle'
 import ProductCard from '../components/ProductCard'
 import TutoModal from '../components/TutoModal'
 import { images } from '../data/images'
-import { produitsIntegre } from '../data/products'
+import { useShopifyCollection } from '../hooks/useShopifyCollection'
 
 const PAGE_SIZE = 4
 
@@ -15,7 +15,9 @@ export default function CarPlayIntegrePage() {
   const [search, setSearch]           = useState('')
   const [visible, setVisible]         = useState(PAGE_SIZE)
 
-  const filtered = produitsIntegre.filter((p) => {
+  const { products, loading } = useShopifyCollection('carplay-integre', 'integre')
+
+  const filtered = products.filter((p) => {
     const q = search.toLowerCase()
     return (
       p.nom.toLowerCase().includes(q) ||
@@ -94,7 +96,13 @@ export default function CarPlayIntegrePage() {
           </div>
 
           {/* Grille */}
-          {shown.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] h-72 animate-pulse" />
+              ))}
+            </div>
+          ) : shown.length === 0 ? (
             <div className="py-20 text-center">
               <p className="font-body text-brand-muted text-sm">Aucun produit pour « {search} ».</p>
             </div>

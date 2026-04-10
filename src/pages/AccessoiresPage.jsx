@@ -3,11 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Search, ChevronDown, Package } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
-import { produitsAccessoires } from '../data/products'
+import { useShopifyCollection } from '../hooks/useShopifyCollection'
 
 const PAGE_SIZE = 6
-
-const CATEGORIES = ['Tous', ...Array.from(new Set(produitsAccessoires.map((p) => p.categorie)))]
 
 const CAT_STYLE = {
   Tous:       { color: '#e2e8f0', activeBg: 'rgba(226,232,240,0.15)', activeBorder: 'rgba(226,232,240,0.4)' },
@@ -18,11 +16,15 @@ const CAT_STYLE = {
 }
 
 export default function AccessoiresPage() {
-  const [search, setSearch]     = useState('')
+  const [search, setSearch]       = useState('')
   const [categorie, setCategorie] = useState('Tous')
-  const [visible, setVisible]   = useState(PAGE_SIZE)
+  const [visible, setVisible]     = useState(PAGE_SIZE)
 
-  const filtered = produitsAccessoires.filter((p) => {
+  const { products, loading } = useShopifyCollection('accessoires', 'accessoire')
+
+  const CATEGORIES = ['Tous', ...Array.from(new Set(products.map((p) => p.categorie).filter(Boolean)))]
+
+  const filtered = products.filter((p) => {
     const q = search.toLowerCase()
     const matchSearch =
       p.nom.toLowerCase().includes(q) ||
@@ -114,7 +116,13 @@ export default function AccessoiresPage() {
       <section className="py-14 px-5 md:px-8 pb-24">
         <div className="max-w-[1400px] mx-auto">
 
-          {shown.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] h-72 animate-pulse" />
+              ))}
+            </div>
+          ) : shown.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-24 text-center">
               <p className="font-body text-brand-muted text-sm mb-3">Aucun accessoire trouvé.</p>
               {search && (

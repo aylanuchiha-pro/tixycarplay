@@ -12,7 +12,9 @@ import GalleryCard from '../components/GalleryCard'
 import CountUp from '../components/CountUp'
 import TutoModal from '../components/TutoModal'
 import { images } from '../data/images'
-import { produitsFilaire, produitsIntegre, services, galerie, temoignages, faq } from '../data/products'
+import { services, galerie, temoignages, faq } from '../data/products'
+import { useShopifyCollection } from '../hooks/useShopifyCollection'
+import { useShopifyCart } from '../hooks/useShopifyCart'
 
 /* ─── Fade + slide au scroll ─── */
 function FadeUp({ children, delay = 0, className = '' }) {
@@ -113,11 +115,20 @@ export default function HomePage() {
   const [qty, setQty]                 = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
 
-  const bestseller = produitsFilaire[0] // TixyScreen 7" — Bestseller
+  const { products: produitsFilaire } = useShopifyCollection('carplay-filaire', 'filaire')
+  const { products: produitsIntegre } = useShopifyCollection('carplay-integre', 'integre')
+  const { addToCart, loading: cartLoading } = useShopifyCart()
 
-  const handleAddToCart = () => {
-    setAddedToCart(true)
-    setTimeout(() => setAddedToCart(false), 2200)
+  // Premier produit filaire dispo = bestseller, null si collection vide
+  const bestseller = produitsFilaire[0] ?? null
+
+  const handleAddToCart = async () => {
+    if (bestseller?.shopifyHandle) {
+      await addToCart(bestseller, true, qty)
+    } else {
+      setAddedToCart(true)
+      setTimeout(() => setAddedToCart(false), 2200)
+    }
   }
 
   /* Parallaxe hero */
@@ -312,7 +323,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ BESTSELLER ═══════════ */}
-      <section className="py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>
+      {bestseller && <section className="py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>
         <div className="max-w-[1400px] mx-auto">
 
           {/* En-tête de section */}
@@ -454,12 +465,15 @@ export default function HomePage() {
                 {/* Bouton panier */}
                 <motion.button
                   onClick={handleAddToCart}
-                  whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(0,229,255,0.25)' }}
-                  whileTap={{ scale: 0.97 }}
-                  className="w-full sm:flex-1 h-12 rounded-xl font-bold text-[15px] text-black flex items-center justify-center gap-2 transition-all duration-300 pulse-glow"
+                  disabled={cartLoading}
+                  whileHover={{ scale: cartLoading ? 1 : 1.03, boxShadow: '0 0 30px rgba(0,229,255,0.25)' }}
+                  whileTap={{ scale: cartLoading ? 1 : 0.97 }}
+                  className="w-full sm:flex-1 h-12 rounded-xl font-bold text-[15px] text-black flex items-center justify-center gap-2 transition-all duration-300 pulse-glow disabled:opacity-70 disabled:cursor-wait"
                   style={{ background: addedToCart ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
                 >
-                  {addedToCart ? (
+                  {cartLoading ? (
+                    <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Redirection…</>
+                  ) : addedToCart ? (
                     <><Check size={16} /> Ajouté au panier !</>
                   ) : (
                     <><ShoppingCart size={16} /> Ajouter au panier</>
@@ -509,7 +523,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {produitsFilaire.slice(1).map((p, i) => (
+              {produitsFilaire.slice(1, 4).map((p, i) => (
                 <motion.div
                   key={p.id}
                   whileHover={{ y: -4 }}
@@ -539,7 +553,7 @@ export default function HomePage() {
             </div>
           </FadeUp>
         </div>
-      </section>
+      </section>}
 
       {/* ═══════════ TRUST BAR ═══════════ */}
       <section className="py-14 border-y border-white/[0.04]">
@@ -682,9 +696,11 @@ export default function HomePage() {
               </Link>
             </FadeUp>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {produitsFilaire.map((p, i) => <ProductCard key={p.id} product={p} index={i} variant="filaire" />)}
-          </div>
+          {produitsFilaire.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {produitsFilaire.map((p, i) => <ProductCard key={p.id} product={p} index={i} variant="filaire" />)}
+            </div>
+          )}
         </div>
       </section>
 
@@ -724,9 +740,11 @@ export default function HomePage() {
               </Link>
             </FadeUp>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {produitsIntegre.map((p, i) => <ProductCard key={p.id} product={p} index={i} variant="integre" onTuto={setTutoProduct} />)}
-          </div>
+          {produitsIntegre.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {produitsIntegre.map((p, i) => <ProductCard key={p.id} product={p} index={i} variant="integre" onTuto={setTutoProduct} />)}
+            </div>
+          )}
           <FadeUp delay={0.3} className="text-center mt-6">
             <p className="text-xs text-[#a855f7]/60">▶ Cliquez sur lecture pour voir le tuto d'installation</p>
           </FadeUp>

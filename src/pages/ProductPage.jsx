@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, ShoppingCart, Check, Camera, Star,
   Package, ChevronRight, Play,
 } from 'lucide-react'
 import TutoModal from '../components/TutoModal'
 import ProductCard from '../components/ProductCard'
-import { getProductById, getRelatedProducts } from '../data/products'
+import { getProductByHandle, normalizeShopifyProduct, getCollectionProducts } from '../services/shopify'
 import { useShopifyCart } from '../hooks/useShopifyCart'
 
 /* ─── Couleurs par type ─── */
@@ -15,6 +15,28 @@ const ACCENT = {
   filaire:    { color: '#00e5ff', gradient: 'linear-gradient(135deg,#00e5ff,#06b6d4)', label: 'CarPlay Filaire',  to: '/carplay-filaire' },
   integre:    { color: '#a855f7', gradient: 'linear-gradient(135deg,#7c3aed,#a855f7)', label: 'CarPlay Intégré', to: '/carplay-integre' },
   accessoire: { color: '#f5c542', gradient: 'linear-gradient(135deg,#f5c542,#f59e0b)', label: 'Accessoires',     to: '/accessoires'     },
+}
+
+/* ─── Skeleton chargement ─── */
+function ProductSkeleton() {
+  return (
+    <div className="grain min-h-screen pt-24 px-5 md:px-8 max-w-[1400px] mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-16 mt-8">
+        <div className="rounded-3xl bg-white/[0.04] aspect-[4/3] animate-pulse" />
+        <div className="flex flex-col gap-5">
+          <div className="h-5 w-28 rounded-full bg-white/[0.06] animate-pulse" />
+          <div className="h-12 w-3/4 rounded-xl bg-white/[0.06] animate-pulse" />
+          <div className="h-10 w-32 rounded-xl bg-white/[0.06] animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-4 w-full rounded bg-white/[0.04] animate-pulse" />
+            <div className="h-4 w-5/6 rounded bg-white/[0.04] animate-pulse" />
+            <div className="h-4 w-4/6 rounded bg-white/[0.04] animate-pulse" />
+          </div>
+          <div className="h-14 w-full rounded-2xl bg-white/[0.06] animate-pulse mt-4" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 /* ─── Étoiles ─── */
@@ -29,7 +51,7 @@ function Stars({ note = 5 }) {
 }
 
 /* ─── Option caméra ─── */
-function CameraOption({ option, selected, onToggle, accent }) {
+function CameraOption({ option, selected, onToggle }) {
   const isFree = option.prix === 0
   return (
     <motion.button
@@ -41,7 +63,6 @@ function CameraOption({ option, selected, onToggle, accent }) {
         : { background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.08)' }
       }
     >
-      {/* Checkbox custom */}
       <div
         className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-all"
         style={selected
@@ -51,28 +72,19 @@ function CameraOption({ option, selected, onToggle, accent }) {
       >
         {selected && <Check size={12} className="text-white" strokeWidth={3} />}
       </div>
-
-      {/* Icône caméra */}
       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)' }}>
         <Camera size={18} className="text-emerald-400" />
       </div>
-
-      {/* Texte */}
       <div className="flex-1 min-w-0">
         <p className="font-body text-sm font-semibold text-brand-text">Ajouter une caméra de recul HD</p>
-        <p className="font-body text-xs text-brand-muted mt-0.5">
-          170° grand angle · Vision nocturne · IP67 · Plug & Play
-        </p>
+        <p className="font-body text-xs text-brand-muted mt-0.5">170° grand angle · Vision nocturne · IP67 · Plug & Play</p>
       </div>
-
-      {/* Prix */}
       <div className="flex-shrink-0 text-right">
-        {isFree ? (
-          <span className="font-display text-lg text-emerald-400">{option.label ?? 'Offerte'}</span>
-        ) : (
-          <span className="font-display text-lg" style={{ color: '#34d399' }}>+{option.prix}€</span>
-        )}
+        {isFree
+          ? <span className="font-display text-lg text-emerald-400">{option.label ?? 'Offerte'}</span>
+          : <span className="font-display text-lg" style={{ color: '#34d399' }}>+{option.prix}€</span>
+        }
       </div>
     </motion.button>
   )
@@ -81,15 +93,60 @@ function CameraOption({ option, selected, onToggle, accent }) {
 /* ════════════════════════════════════════════════════════ */
 export default function ProductPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
-  const product = getProductById(id)
 
+  const [product,        setProduct]        = useState(null)
+  const [related,        setRelated]        = useState([])
+  const [loading,        setLoading]        = useState(true)
   const [cameraSelected, setCameraSelected] = useState(false)
-  const [addedToCart, setAddedToCart]       = useState(false)
-  const [tutoOpen, setTutoOpen]             = useState(false)
+  const [addedToCart,    setAddedToCart]    = useState(false)
+  const [tutoOpen,       setTutoOpen]       = useState(false)
+
   const { addToCart, loading: cartLoading, error: cartError } = useShopifyCart()
 
-  /* Produit introuvable */
+  /* ─── Chargement depuis Shopify ─── */
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setProduct(null)
+
+    getProductByHandle(id)
+      .then((node) => {
+        if (cancelled || !node) return
+        const fallbackType = node.productType
+          ? node.productType.toLowerCase().includes('integr') ? 'integre'
+          : node.productType.toLowerCase().includes('access') ? 'accessoire'
+          : 'filaire'
+          : 'filaire'
+        setProduct(normalizeShopifyProduct(node, fallbackType))
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false) })
+
+    return () => { cancelled = true }
+  }, [id])
+
+  /* ─── Produits liés (même collection) ─── */
+  useEffect(() => {
+    if (!product) return
+    const collectionHandle =
+      product.type === 'integre'    ? 'carplay-integre' :
+      product.type === 'accessoire' ? 'accessoires'     : 'carplay-filaire'
+
+    getCollectionProducts(collectionHandle, 8)
+      .then((collection) => {
+        if (!collection) return
+        const others = collection.products.edges
+          .map(({ node }) => normalizeShopifyProduct(node, product.type))
+          .filter((p) => p.shopifyHandle !== product.shopifyHandle)
+          .slice(0, 4)
+        setRelated(others)
+      })
+      .catch(() => {})
+  }, [product?.shopifyHandle])
+
+  /* ─── États ─── */
+  if (loading) return <ProductSkeleton />
+
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-20 grain">
@@ -106,15 +163,13 @@ export default function ProductPage() {
     )
   }
 
-  const acc     = ACCENT[product.type] ?? ACCENT.filaire
-  const related = getRelatedProducts(product)
+  const acc       = ACCENT[product.type] ?? ACCENT.filaire
   const totalPrix = product.prix + (cameraSelected && product.cameraOption ? product.cameraOption.prix : 0)
 
   const handleAddToCart = async () => {
     if (product.shopifyHandle) {
       await addToCart(product, true)
     } else {
-      // Fallback visuel si shopifyHandle n'est pas encore rempli
       setAddedToCart(true)
       setTimeout(() => setAddedToCart(false), 2200)
     }
@@ -122,7 +177,9 @@ export default function ProductPage() {
 
   return (
     <div className="grain min-h-screen">
-      {tutoOpen && product.tutoEtapes && <TutoModal product={product} onClose={() => setTutoOpen(false)} />}
+      {tutoOpen && product.tutoEtapes?.length > 0 && (
+        <TutoModal product={product} onClose={() => setTutoOpen(false)} />
+      )}
 
       {/* ─── Fil d'Ariane ─── */}
       <div className="pt-24 pb-4 px-5 md:px-8 max-w-[1400px] mx-auto">
@@ -146,10 +203,14 @@ export default function ProductPage() {
             className="lg:sticky lg:top-24"
           >
             <div className="relative rounded-3xl overflow-hidden aspect-[4/3] bg-black/20">
-              <img src={product.image} alt={product.nom} className="img-cover" loading="eager" />
+              {product.image
+                ? <img src={product.image} alt={product.nom} className="img-cover" loading="eager" />
+                : <div className="w-full h-full bg-white/[0.04] flex items-center justify-center">
+                    <Package size={48} className="text-brand-muted" />
+                  </div>
+              }
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-              {/* Badge */}
               {product.badge && (
                 <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-[11px] font-bold text-white tracking-wider uppercase"
                   style={{ background: acc.gradient }}>
@@ -157,7 +218,6 @@ export default function ProductPage() {
                 </div>
               )}
 
-              {/* Prix barré */}
               {product.prixBarre && (
                 <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-xl px-3 py-1.5">
                   <span className="font-body text-xs text-white/60 line-through">{product.prixBarre.toFixed(2)}€</span>
@@ -168,8 +228,7 @@ export default function ProductPage() {
               )}
             </div>
 
-            {/* Tuto bouton (si disponible) */}
-            {product.tutoEtapes && (
+            {product.tutoEtapes?.length > 0 && (
               <motion.button
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={() => setTutoOpen(true)}
@@ -216,23 +275,32 @@ export default function ProductPage() {
               )}
             </div>
 
-            {/* Description longue */}
+            {/* Disponibilité */}
+            {!product.availableForSale && (
+              <p className="font-body text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-2">
+                Ce produit est actuellement indisponible.
+              </p>
+            )}
+
+            {/* Description */}
             <p className="font-body text-brand-muted text-[15px] leading-relaxed">
-              {product.descriptionLongue ?? product.description}
+              {product.descriptionLongue || product.description}
             </p>
 
             {/* Specs */}
-            <div>
-              <p className="font-body text-xs tracking-[2px] uppercase text-brand-muted mb-3">Caractéristiques</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {(product.specs ?? []).map((s, i) => (
-                  <div key={i} className="flex items-center gap-2.5">
-                    <Check size={13} style={{ color: acc.color, flexShrink: 0 }} />
-                    <span className="font-body text-sm text-brand-text">{s}</span>
-                  </div>
-                ))}
+            {product.specs?.length > 0 && (
+              <div>
+                <p className="font-body text-xs tracking-[2px] uppercase text-brand-muted mb-3">Caractéristiques</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {product.specs.map((s, i) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                      <Check size={13} style={{ color: acc.color, flexShrink: 0 }} />
+                      <span className="font-body text-sm text-brand-text">{s}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Option caméra */}
             {product.cameraOption && (
@@ -242,7 +310,6 @@ export default function ProductPage() {
                   option={product.cameraOption}
                   selected={cameraSelected}
                   onToggle={() => setCameraSelected((v) => !v)}
-                  accent={acc.color}
                 />
                 {cameraSelected && (
                   <motion.p
@@ -283,14 +350,16 @@ export default function ProductPage() {
                 whileHover={{ scale: cartLoading ? 1 : 1.02 }}
                 whileTap={{ scale: cartLoading ? 1 : 0.97 }}
                 onClick={handleAddToCart}
-                disabled={cartLoading}
-                className="flex-1 flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-base text-black transition-all disabled:opacity-70 disabled:cursor-wait"
+                disabled={cartLoading || !product.availableForSale}
+                className="flex-1 flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-base text-black transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ background: addedToCart ? 'linear-gradient(135deg,#10b981,#059669)' : acc.gradient }}
               >
                 {cartLoading ? (
                   <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Redirection…</>
                 ) : addedToCart ? (
                   <><Check size={18} strokeWidth={3} /> Ajouté au panier</>
+                ) : !product.availableForSale ? (
+                  <>Indisponible</>
                 ) : (
                   <><ShoppingCart size={18} /> Ajouter au panier — {totalPrix.toFixed(2)}€</>
                 )}
@@ -325,7 +394,8 @@ export default function ProductPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {related.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} variant={p.type === 'integre' ? 'integre' : p.type === 'accessoire' ? 'accessoire' : 'filaire'} />
+                <ProductCard key={p.id} product={p} index={i}
+                  variant={p.type === 'integre' ? 'integre' : p.type === 'accessoire' ? 'accessoire' : 'filaire'} />
               ))}
             </div>
           </div>
