@@ -13,7 +13,7 @@ export default function ProductCard({ product, index = 0, onTuto, variant = 'fil
     e.preventDefault()
     e.stopPropagation()
     if (product.shopifyHandle) {
-      await addToCart(product, true)
+      await addToCart(product)
     }
   }
 

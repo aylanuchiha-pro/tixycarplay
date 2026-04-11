@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, ShoppingCart } from 'lucide-react'
+import { useCart } from '../context/CartContext'
 
 const NAV_LINKS = [
   { to: '/',                label: 'Accueil' },
@@ -18,6 +19,7 @@ export default function Navbar() {
   const [scrolled, setScrolled]     = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const { openCart, itemCount } = useCart()
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 60)
@@ -74,8 +76,8 @@ export default function Navbar() {
               className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-base"
               style={{ background: 'linear-gradient(135deg, #00e5ff, #7c3aed)' }}
             >T</motion.div>
-            <span className="font-display text-[22px] sm:text-[26px] tracking-[2px] sm:tracking-[3px] text-brand-text">
-              Tixycars <span className="text-brand-cyan">CarPlay</span>
+            <span className="font-display text-[20px] sm:text-[22px] md:text-[26px] tracking-[1px] sm:tracking-[2px] md:tracking-[3px] text-brand-text">
+              Tixycars<span className="hidden sm:inline text-brand-cyan"> CarPlay</span>
             </span>
           </Link>
 
@@ -103,10 +105,16 @@ export default function Navbar() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-black"
+              onClick={openCart}
+              className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-black relative"
               style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
             >
               <ShoppingCart className="w-4 h-4" /> Panier
+              {itemCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-white text-black text-[10px] font-black flex items-center justify-center leading-none">
+                  {itemCount > 9 ? '9+' : itemCount}
+                </span>
+              )}
             </motion.button>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -164,10 +172,16 @@ export default function Navbar() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.38 }}
+                onClick={() => { setMobileOpen(false); openCart() }}
                 className="mt-6 w-full py-4 rounded-2xl font-bold text-black text-base flex items-center justify-center gap-2"
                 style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
               >
                 <ShoppingCart className="w-5 h-5" /> Voir le panier
+                {itemCount > 0 && (
+                  <span className="ml-1 bg-black/20 text-black rounded-full px-2 text-xs font-black">
+                    {itemCount}
+                  </span>
+                )}
               </motion.button>
             </div>
           </motion.div>

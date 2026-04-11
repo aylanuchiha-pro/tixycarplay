@@ -91,7 +91,11 @@ export async function getCollectionProducts(collectionHandle, first = 50) {
 /* ─────────────────────────────────────────────
    PRODUIT UNIQUE PAR HANDLE
 ───────────────────────────────────────────── */
+const productCache = new Map()
+
 export async function getProductByHandle(handle) {
+  if (productCache.has(handle)) return productCache.get(handle)
+
   const data = await shopifyFetch(`
     query GetProduct($handle: String!) {
       productByHandle(handle: $handle) {
@@ -134,7 +138,9 @@ export async function getProductByHandle(handle) {
     }
   `, { handle })
 
-  return data.productByHandle
+  const product = data.productByHandle
+  if (product) productCache.set(handle, product)
+  return product
 }
 
 /* ─────────────────────────────────────────────
@@ -276,6 +282,22 @@ export async function addCartLines(cartId, lines) {
         cart {
           id
           checkoutUrl
+          lines(first: 20) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    priceV2 { amount currencyCode }
+                    product { title handle }
+                  }
+                }
+              }
+            }
+          }
           cost { totalAmount { amount currencyCode } }
         }
         userErrors { field message }

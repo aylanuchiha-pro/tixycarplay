@@ -2,7 +2,9 @@ import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useScrollProgress } from './hooks/useScroll'
+import { CartProvider } from './context/CartContext'
 import Navbar from './components/Navbar'
+import CartDrawer from './components/CartDrawer'
 import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
 import CarPlayFilairePage from './pages/CarPlayFilairePage'
@@ -32,10 +34,12 @@ export default function App() {
   const location = useLocation()
 
   return (
+    <CartProvider>
     <div className="min-h-screen bg-brand-dark text-brand-text">
       <div className="fixed top-0 left-0 h-[3px] z-[100]"
         style={{ width: `${progress * 100}%`, background: 'linear-gradient(90deg, #00e5ff, #7c3aed, #f5c542)', transition: 'width 0.1s linear' }} />
       <Navbar />
+      <CartDrawer />
       <ScrollToTop />
       <main>
         <AnimatePresence mode="wait">
@@ -66,5 +70,6 @@ export default function App() {
       </main>
       <Footer />
     </div>
+    </CartProvider>
   )
 }

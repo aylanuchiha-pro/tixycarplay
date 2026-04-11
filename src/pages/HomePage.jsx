@@ -6,7 +6,6 @@ import {
   Zap, Shield, Truck, Headphones,
   ShoppingCart, Check, Flame, Users, Package, Camera,
 } from 'lucide-react'
-import SectionTitle from '../components/SectionTitle'
 import ProductCard from '../components/ProductCard'
 import GalleryCard from '../components/GalleryCard'
 import CountUp from '../components/CountUp'
@@ -124,7 +123,7 @@ export default function HomePage() {
 
   const handleAddToCart = async () => {
     if (bestseller?.shopifyHandle) {
-      await addToCart(bestseller, true, qty)
+      await addToCart(bestseller, false, qty)
     } else {
       setAddedToCart(true)
       setTimeout(() => setAddedToCart(false), 2200)
@@ -142,179 +141,144 @@ export default function HomePage() {
       {tutoProduct && <TutoModal product={tutoProduct} onClose={() => setTutoProduct(null)} />}
 
       {/* ═══════════ HERO ═══════════ */}
-      <section className="min-h-screen flex flex-col bg-brand-dark">
+      <section ref={heroRef} className="relative min-h-screen flex flex-col overflow-hidden bg-brand-dark">
 
-        {/* ── Zone principale ── */}
-        <div className="flex-1 flex items-end">
-          <div className="w-full max-w-[1400px] mx-auto px-5 md:px-10 pt-28 md:pt-36 pb-12 grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_460px] gap-10 lg:gap-16 items-end">
+        {/* ── Background image ── */}
+        <motion.div className="absolute inset-0 scale-110" style={{ y: heroImgY }}>
+          <img src={images.bgDark} alt="" className="img-cover" loading="eager" />
 
-            {/* Texte */}
-            <div>
-              {/* Badges produits */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, duration: 0.7 }}
-                className="flex flex-wrap items-center gap-2 mb-8 md:mb-10"
+          {/* Mobile : photo visible en haut, fade vers bas */}
+          <div className="absolute inset-0 md:hidden" style={{
+            background: 'linear-gradient(to bottom, rgba(7,7,13,0.3) 0%, rgba(7,7,13,0.5) 40%, rgba(7,7,13,0.92) 70%, #07070d 100%)'
+          }} />
+          {/* Desktop : fade horizontal gauche → droite */}
+          <div className="absolute inset-0 hidden md:block" style={{
+            background: 'linear-gradient(105deg, #07070d 40%, rgba(7,7,13,0.80) 65%, rgba(7,7,13,0.35) 100%)'
+          }} />
+        </motion.div>
+
+        {/* ── Contenu ── */}
+        {/* Mobile : ancré en bas de l'écran (photo visible au-dessus) */}
+        {/* Desktop : centré verticalement */}
+        <motion.div
+          className="relative z-10 flex-1 flex items-end md:items-center"
+          style={{ opacity: heroOpacity }}
+        >
+          <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 pb-6 md:pt-36 md:pb-16">
+
+            {/* Eyebrow */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.7 }}
+              className="flex items-center gap-2 mb-4 md:mb-10"
+            >
+              <span className="w-5 md:w-8 h-px bg-brand-cyan flex-shrink-0" />
+              <span className="text-[10px] md:text-[11px] tracking-[2px] md:tracking-[4px] uppercase font-semibold" style={{ color: '#00e5ff' }}>
+                Installation à domicile<span className="hidden sm:inline"> · Île-de-France</span>
+              </span>
+            </motion.div>
+
+            {/* Titres */}
+            <div className="overflow-hidden">
+              <motion.h1
+                initial={{ y: '110%' }} animate={{ y: 0 }}
+                transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="font-display text-white leading-none"
+                style={{ fontSize: 'clamp(48px, 14vw, 160px)' }}
               >
-                <span className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase"
-                  style={{ background: 'rgba(0,229,255,0.12)', border: '1px solid rgba(0,229,255,0.35)', color: '#00e5ff' }}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan inline-block" />
-                  CarPlay Filaire
-                </span>
-                <span className="text-white/20 text-xs">+</span>
-                <span className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase"
-                  style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.4)', color: '#a78bfa' }}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block" />
-                  CarPlay Intégré
-                </span>
-                <span className="text-white/20 text-xs">+</span>
-                <span className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase"
-                  style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.35)', color: '#34d399' }}>
-                  <Camera size={11} />
-                  Caméra de recul
-                </span>
-                <span className="ml-2 font-body text-xs text-brand-muted tracking-wide hidden sm:inline">· Île-de-France</span>
-              </motion.div>
-
-              {/* Titre — clip reveal ligne par ligne */}
-              <div className="overflow-hidden mb-2">
-                <motion.h1
-                  initial={{ y: '105%' }} animate={{ y: 0 }}
-                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display text-white leading-[0.88]"
-                  style={{ fontSize: 'clamp(60px, 11vw, 148px)', letterSpacing: '1px' }}
-                >
-                  TIXYCARS
-                </motion.h1>
-              </div>
-              <div className="overflow-hidden mb-5 md:mb-7">
-                <motion.h1
-                  initial={{ y: '105%' }} animate={{ y: 0 }}
-                  transition={{ duration: 1, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display leading-[0.88]"
-                  style={{
-                    fontSize: 'clamp(60px, 11vw, 148px)',
-                    letterSpacing: '1px',
-                    background: 'linear-gradient(90deg, #00e5ff 0%, #7c3aed 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  CARPLAY
-                </motion.h1>
-              </div>
-
-              {/* Accroche */}
-              <div className="overflow-hidden mb-10 md:mb-12">
-                <motion.p
-                  initial={{ y: '105%' }} animate={{ y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-body text-brand-muted text-[15px] leading-relaxed max-w-[400px]"
-                >
-                  Boîtier plug&amp;play ou autoradio intégré sur mesure —{' '}
-                  <span className="text-white/70">on se déplace chez vous</span> pour l'installation.
-                </motion.p>
-              </div>
-
-              {/* CTAs — deux offres distinctes */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.8 }}
-                className="flex flex-col sm:flex-row gap-3"
+                TIXYCARS
+              </motion.h1>
+            </div>
+            <div className="overflow-hidden mb-5 md:mb-10">
+              <motion.h1
+                initial={{ y: '110%' }} animate={{ y: 0 }}
+                transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="font-display leading-none"
+                style={{
+                  fontSize: 'clamp(48px, 14vw, 160px)',
+                  background: 'linear-gradient(90deg, #00e5ff, #7c3aed)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
               >
-                <Link to="/carplay-filaire">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    className="px-7 py-3.5 rounded-xl font-bold text-[14px] text-black whitespace-nowrap flex items-center gap-2"
-                    style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
-                  >
-                    CarPlay Filaire <ArrowRight size={15} />
-                  </motion.button>
-                </Link>
-                <Link to="/carplay-integre">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    className="px-7 py-3.5 rounded-xl font-bold text-[14px] text-white whitespace-nowrap flex items-center gap-2"
-                    style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.3), rgba(124,58,237,0.15))', border: '1px solid rgba(124,58,237,0.5)' }}
-                  >
-                    CarPlay Intégré <ArrowRight size={15} className="text-violet-400" />
-                  </motion.button>
-                </Link>
-                <Link to="/installation">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    className="px-7 py-3.5 rounded-xl font-semibold text-[14px] text-brand-muted hover:text-white border border-white/10 hover:border-white/20 transition-all whitespace-nowrap"
-                  >
-                    Réserver
-                  </motion.button>
-                </Link>
-              </motion.div>
+                CARPLAY
+              </motion.h1>
             </div>
 
-            {/* Image produit encadrée — desktop uniquement */}
-            <motion.div
-              ref={heroRef}
-              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="hidden lg:block relative"
+            {/* Description — desktop uniquement */}
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ delay: 0.7, duration: 0.8 }}
+              className="hidden sm:block font-body text-brand-muted text-[15px] leading-relaxed mb-8 max-w-[480px]"
             >
-              <motion.div
-                style={{ y: heroImgY, aspectRatio: '4/5' }}
-                className="rounded-2xl overflow-hidden"
-              >
-                <img
-                  src={images.hero}
-                  alt="CarPlay installé dans une voiture"
-                  className="img-cover"
-                  loading="eager"
-                />
-              </motion.div>
+              Boîtier plug&amp;play ou autoradio intégré —{' '}
+              <span className="text-white/75">on se déplace chez vous</span>.
+            </motion.p>
 
-              {/* Tag prix flottant */}
-              <motion.div
-                initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.1, duration: 0.7 }}
-                className="absolute -right-4 top-8 bg-brand-card border border-white/[0.08] rounded-2xl px-4 py-3"
-              >
-                <p className="font-body text-[10px] text-brand-muted mb-0.5 uppercase tracking-wider">À partir de</p>
-                <p className="font-display text-2xl text-brand-cyan leading-none">64,99€</p>
-              </motion.div>
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="flex flex-col sm:flex-row gap-2.5"
+            >
+              <Link to="/carplay-filaire" className="w-full sm:w-auto">
+                <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-[14px] text-black flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
+                >
+                  Découvrir les offres <ArrowRight size={15} />
+                </motion.button>
+              </Link>
+              <Link to="/installation" className="w-full sm:w-auto">
+                <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-[14px] text-white border border-white/20 hover:bg-white/[0.06] transition-all text-center"
+                >
+                  Réserver une installation
+                </motion.button>
+              </Link>
+            </motion.div>
 
-              {/* Tag installation flottant */}
-              <motion.div
-                initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.25, duration: 0.7 }}
-                className="absolute -left-4 bottom-12 bg-brand-card border border-white/[0.08] rounded-2xl px-4 py-3 flex items-center gap-3"
-              >
-                <div className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
-                <div>
-                  <p className="font-body text-xs font-semibold text-brand-text">Installation à domicile</p>
-                  <p className="font-body text-[10px] text-brand-muted">Île-de-France</p>
-                </div>
-              </motion.div>
+            {/* Badges — desktop uniquement */}
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ delay: 1.0, duration: 0.7 }}
+              className="hidden sm:flex flex-wrap gap-2 mt-10"
+            >
+              {[
+                { label: 'CarPlay Filaire',  color: '#00e5ff', bg: 'rgba(0,229,255,0.08)',  border: 'rgba(0,229,255,0.25)' },
+                { label: 'CarPlay Intégré',  color: '#a78bfa', bg: 'rgba(124,58,237,0.10)', border: 'rgba(124,58,237,0.30)' },
+                { label: 'Caméra de recul',  color: '#34d399', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.25)' },
+              ].map(b => (
+                <span key={b.label}
+                  className="px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wide uppercase"
+                  style={{ background: b.bg, border: `1px solid ${b.border}`, color: b.color }}
+                >
+                  {b.label}
+                </span>
+              ))}
             </motion.div>
 
           </div>
-        </div>
+        </motion.div>
 
-        {/* ── Bande stats bas de page ── */}
+        {/* ── Bande stats ── */}
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 1.3, duration: 0.8 }}
-          className="border-t border-white/[0.06]"
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="relative z-10 border-t border-white/[0.06]"
         >
-          <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-6 flex flex-wrap gap-8 md:gap-0 md:divide-x divide-white/[0.06]">
+          <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 md:py-6 grid grid-cols-4 md:flex md:divide-x divide-white/[0.06]">
             {[
-              { val: 500, suf: '+',    label: 'Installations réalisées' },
-              { val: 98,  suf: '%',    label: 'Clients satisfaits' },
-              { val: 48,  suf: 'h',    label: 'Délai de livraison' },
-              { val: 2,   suf: ' ans', label: 'De garantie' },
+              { val: 500, suf: '+',    label: 'Installations' },
+              { val: 98,  suf: '%',    label: 'Satisfaits' },
+              { val: 48,  suf: 'h',    label: 'Livraison' },
+              { val: 2,   suf: ' ans', label: 'Garantie' },
             ].map((s, i) => (
-              <div key={i} className="md:flex-1 md:px-8 first:pl-0 last:pr-0">
-                <p className="font-display text-2xl md:text-3xl text-white leading-none">
+              <div key={i} className="md:flex-1 md:px-8 text-center md:text-left first:pl-0 last:pr-0">
+                <p className="font-display text-xl md:text-3xl text-white leading-none">
                   <CountUp target={s.val} suffix={s.suf} />
                 </p>
-                <p className="font-body text-xs text-brand-muted mt-1">{s.label}</p>
+                <p className="font-body text-[10px] md:text-xs text-brand-muted mt-1">{s.label}</p>
               </div>
             ))}
           </div>
@@ -472,7 +436,7 @@ export default function HomePage() {
                   style={{ background: addedToCart ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
                 >
                   {cartLoading ? (
-                    <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Redirection…</>
+                    <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Ajout en cours…</>
                   ) : addedToCart ? (
                     <><Check size={16} /> Ajouté au panier !</>
                   ) : (
@@ -485,7 +449,9 @@ export default function HomePage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full h-12 rounded-xl font-semibold text-[14px] text-white border border-white/10 hover:bg-white/5 transition-all mb-7"
+                onClick={() => bestseller?.shopifyHandle && addToCart(bestseller, true, qty)}
+                disabled={cartLoading}
+                className="w-full h-12 rounded-xl font-semibold text-[14px] text-white border border-white/10 hover:bg-white/5 transition-all mb-7 disabled:opacity-60 disabled:cursor-wait"
               >
                 Acheter maintenant
               </motion.button>
@@ -508,50 +474,6 @@ export default function HomePage() {
             </FadeUp>
           </div>
 
-          {/* ── Autres produits populaires ── */}
-          <FadeUp delay={0.1} className="mt-16">
-            <div className="flex items-center justify-between mb-7">
-              <p className="font-body text-sm font-semibold text-brand-text flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan inline-block" />
-                Souvent achetés ensemble
-              </p>
-              <Link to="/carplay-filaire">
-                <span className="text-xs text-brand-muted hover:text-brand-cyan transition-colors flex items-center gap-1">
-                  Voir tout <ArrowRight size={11} />
-                </span>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {produitsFilaire.slice(1, 4).map((p, i) => (
-                <motion.div
-                  key={p.id}
-                  whileHover={{ y: -4 }}
-                  className="flex items-center gap-4 p-4 rounded-2xl border border-white/[0.06] hover:border-brand-cyan/20 transition-all duration-400 group"
-                  style={{ background: '#10101e' }}
-                >
-                  <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 img-shimmer bg-black/30">
-                    <img src={p.image} alt={p.nom} className="img-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display text-sm tracking-wider text-brand-text truncate">{p.nom}</p>
-                    <p className="font-body text-[11px] text-brand-muted mt-0.5 truncate">{p.description.split('.')[0]}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="font-display text-lg text-brand-cyan">{p.prix.toFixed(2)}€</span>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-black text-xs"
-                        style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
-                      >
-                        <ShoppingCart size={12} />
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </FadeUp>
         </div>
       </section>}
 

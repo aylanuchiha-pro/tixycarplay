@@ -168,7 +168,7 @@ export default function ProductPage() {
 
   const handleAddToCart = async () => {
     if (product.shopifyHandle) {
-      await addToCart(product, true)
+      await addToCart(product)
     } else {
       setAddedToCart(true)
       setTimeout(() => setAddedToCart(false), 2200)
@@ -355,7 +355,7 @@ export default function ProductPage() {
                 style={{ background: addedToCart ? 'linear-gradient(135deg,#10b981,#059669)' : acc.gradient }}
               >
                 {cartLoading ? (
-                  <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Redirection…</>
+                  <><span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Ajout en cours…</>
                 ) : addedToCart ? (
                   <><Check size={18} strokeWidth={3} /> Ajouté au panier</>
                 ) : !product.availableForSale ? (
