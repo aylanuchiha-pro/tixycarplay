@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback } from 'react'
 
 const CartCtx = createContext(null)
 
-const CART_ID_KEY = 'tixycars_cart_id'
+const CART_ID_KEY = 'tixycarplay_cart_id'
 
 export function CartProvider({ children }) {
   const [isOpen, setIsOpen]           = useState(false)

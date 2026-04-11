@@ -3,6 +3,13 @@
  * Token public → sûr à exposer en frontend
  */
 
+/**
+ * Handle Shopify du produit caméra de recul.
+ * Configurable via VITE_CAMERA_HANDLE dans .env
+ * Le produit doit être dans la collection "accessoires".
+ */
+export const CAMERA_HANDLE = import.meta.env.VITE_CAMERA_HANDLE || 'camera-de-recul'
+
 const DOMAIN  = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN
 const TOKEN   = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN
 const VERSION = import.meta.env.VITE_SHOPIFY_API_VERSION ?? '2026-07'
@@ -23,6 +30,28 @@ async function shopifyFetch(query, variables = {}) {
   const { data, errors } = await res.json()
   if (errors?.length) throw new Error(errors[0].message)
   return data
+}
+
+/* ─────────────────────────────────────────────
+   DEBUG — lister toutes les collections (handles)
+   Appeler depuis la console : import('/src/services/shopify.js').then(m => m.debugCollections())
+───────────────────────────────────────────── */
+export async function debugCollections() {
+  const data = await shopifyFetch(`
+    query {
+      collections(first: 30) {
+        edges {
+          node {
+            title
+            handle
+          }
+        }
+      }
+    }
+  `)
+  const list = data.collections.edges.map(({ node }) => `  "${node.handle}"  →  ${node.title}`)
+  console.log('[Shopify] Collections disponibles :\n' + list.join('\n'))
+  return data.collections.edges.map(({ node }) => node)
 }
 
 /* ─────────────────────────────────────────────
@@ -144,7 +173,7 @@ export async function getProductByHandle(handle) {
 }
 
 /* ─────────────────────────────────────────────
-   NORMALISATION : Shopify → format local TixyCars
+   NORMALISATION : Shopify → format local TixyCarplay
    Convertit un produit Shopify au format attendu par
    les composants React (ProductCard, ProductPage, etc.)
 ───────────────────────────────────────────── */
@@ -226,8 +255,12 @@ export function normalizeShopifyProduct(node, fallbackType = 'filaire') {
     // Shopify variants (pour le checkout)
     variants,
 
-    // Champs spécifiques TixyCars (à compléter via static data si besoin)
-    cameraOption: null,
+    // Option caméra : tag "camera:non-incluse" sur le produit Shopify
+    cameraOption: (node.tags ?? []).some(t => t === 'camera:non-incluse' || t === 'camera:option')
+      ? { available: true }
+      : null,
+
+    // Champs spécifiques TixyCarplay (à compléter via static data si besoin)
     tutoEtapes:   [],
     tutoVideo:    '',
   }
@@ -341,6 +374,45 @@ export async function getCart(cartId) {
     }
   `, { cartId })
   return data.cart
+}
+
+/* ─────────────────────────────────────────────
+   PANIER — supprimer des articles
+───────────────────────────────────────────── */
+export async function removeCartLines(cartId, lineIds) {
+  const data = await shopifyFetch(`
+    mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+      cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+        cart {
+          id
+          checkoutUrl
+          lines(first: 20) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    priceV2 { amount currencyCode }
+                    product { title handle }
+                  }
+                }
+              }
+            }
+          }
+          cost { totalAmount { amount currencyCode } }
+        }
+        userErrors { field message }
+      }
+    }
+  `, { cartId, lineIds })
+
+  if (data.cartLinesRemove.userErrors?.length)
+    throw new Error(data.cartLinesRemove.userErrors[0].message)
+
+  return data.cartLinesRemove.cart
 }
 
 /* ─────────────────────────────────────────────

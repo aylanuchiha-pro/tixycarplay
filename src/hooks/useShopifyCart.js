@@ -14,7 +14,7 @@ export function useShopifyCart() {
 
   const { cartId, syncCart, openCart } = useCart()
 
-  const addToCart = useCallback(async (product, redirectToCheckout = false, quantity = 1) => {
+  const addToCart = useCallback(async (product, { variantId, redirectToCheckout = false, quantity = 1 } = {}) => {
     if (!product?.shopifyHandle) return null
     if (inFlight.current) return null
 
@@ -23,10 +23,14 @@ export function useShopifyCart() {
     setError(null)
 
     try {
-      const shopifyProduct = await getProductByHandle(product.shopifyHandle)
-      if (!shopifyProduct) throw new Error(`Produit "${product.shopifyHandle}" introuvable.`)
-
-      const variant = getFirstAvailableVariant(shopifyProduct)
+      let variant
+      if (variantId) {
+        variant = { id: variantId }
+      } else {
+        const shopifyProduct = await getProductByHandle(product.shopifyHandle)
+        if (!shopifyProduct) throw new Error(`Produit "${product.shopifyHandle}" introuvable.`)
+        variant = getFirstAvailableVariant(shopifyProduct)
+      }
       if (!variant) throw new Error('Aucune variante disponible.')
 
       const line = { merchandiseId: variant.id, quantity }
@@ -62,5 +66,42 @@ export function useShopifyCart() {
     }
   }, [cartId, syncCart, openCart])
 
-  return { addToCart, loading, error }
+  /**
+   * Ajoute plusieurs articles d'un coup (ex: CarPlay + caméra).
+   * @param {Array<{merchandiseId: string, quantity?: number}>} lines
+   */
+  const addBundleToCart = useCallback(async (lines) => {
+    if (!lines?.length) return null
+    if (inFlight.current) return null
+
+    inFlight.current = true
+    setLoading(true)
+    setError(null)
+
+    try {
+      let cart
+      if (cartId) {
+        try {
+          cart = await addCartLines(cartId, lines)
+        } catch {
+          cart = await createCart(lines)
+        }
+      } else {
+        cart = await createCart(lines)
+      }
+
+      syncCart(cart)
+      openCart()
+      return cart
+    } catch (err) {
+      console.error('[Shopify Cart Bundle]', err)
+      setError(err.message)
+      return null
+    } finally {
+      setLoading(false)
+      inFlight.current = false
+    }
+  }, [cartId, syncCart, openCart])
+
+  return { addToCart, addBundleToCart, loading, error }
 }

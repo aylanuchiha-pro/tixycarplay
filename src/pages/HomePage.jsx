@@ -123,7 +123,7 @@ export default function HomePage() {
 
   const handleAddToCart = async () => {
     if (bestseller?.shopifyHandle) {
-      await addToCart(bestseller, false, qty)
+      await addToCart(bestseller, { quantity: qty })
     } else {
       setAddedToCart(true)
       setTimeout(() => setAddedToCart(false), 2200)
@@ -157,14 +157,12 @@ export default function HomePage() {
           }} />
         </motion.div>
 
-        {/* ── Contenu ── */}
-        {/* Mobile : ancré en bas de l'écran (photo visible au-dessus) */}
-        {/* Desktop : centré verticalement */}
+        {/* ── Contenu — centré verticalement sur toutes les tailles ── */}
         <motion.div
-          className="relative z-10 flex-1 flex items-end md:items-center"
+          className="relative z-10 flex-1 flex items-center"
           style={{ opacity: heroOpacity }}
         >
-          <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 pb-6 md:pt-36 md:pb-16">
+          <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 pt-24 pb-8 md:pt-36 md:pb-16">
 
             {/* Eyebrow */}
             <motion.div
@@ -179,37 +177,26 @@ export default function HomePage() {
             </motion.div>
 
             {/* Titres */}
-            <div className="overflow-hidden">
+            <div className="overflow-hidden mb-4 md:mb-10">
               <motion.h1
                 initial={{ y: '110%' }} animate={{ y: 0 }}
                 transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display text-white leading-none"
-                style={{ fontSize: 'clamp(48px, 14vw, 160px)' }}
-              >
-                TIXYCARS
-              </motion.h1>
-            </div>
-            <div className="overflow-hidden mb-5 md:mb-10">
-              <motion.h1
-                initial={{ y: '110%' }} animate={{ y: 0 }}
-                transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 className="font-display leading-none"
-                style={{
-                  fontSize: 'clamp(48px, 14vw, 160px)',
+                style={{ fontSize: 'clamp(32px, 10vw, 160px)' }}
+              >
+                <span className="text-white">TIXY</span><span style={{
                   background: 'linear-gradient(90deg, #00e5ff, #7c3aed)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                }}
-              >
-                CARPLAY
+                }}>CARPLAY</span>
               </motion.h1>
             </div>
 
-            {/* Description — desktop uniquement */}
+            {/* Description */}
             <motion.p
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.8 }}
-              className="hidden sm:block font-body text-brand-muted text-[15px] leading-relaxed mb-8 max-w-[480px]"
+              className="font-body text-brand-muted text-[13px] sm:text-[15px] leading-relaxed mb-6 md:mb-8 max-w-[480px]"
             >
               Boîtier plug&amp;play ou autoradio intégré —{' '}
               <span className="text-white/75">on se déplace chez vous</span>.
@@ -287,11 +274,11 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ BESTSELLER ═══════════ */}
-      {bestseller && <section className="py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>
+      {bestseller && <section className="py-10 sm:py-16 md:py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>
         <div className="max-w-[1400px] mx-auto">
 
           {/* En-tête de section */}
-          <FadeUp className="flex items-center gap-3 mb-10">
+          <FadeUp className="flex items-center gap-3 mb-6 md:mb-10">
             <div className="flex items-center gap-2 px-4 py-1.5 rounded-full" style={{ background: 'linear-gradient(135deg, rgba(245,197,66,0.15), rgba(245,197,66,0.05))', border: '1px solid rgba(245,197,66,0.25)' }}>
               <Flame size={14} className="text-brand-gold" />
               <span className="text-[11px] tracking-[2px] uppercase text-brand-gold font-bold">Meilleure vente</span>
@@ -449,7 +436,7 @@ export default function HomePage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => bestseller?.shopifyHandle && addToCart(bestseller, true, qty)}
+                onClick={() => bestseller?.shopifyHandle && addToCart(bestseller, { redirectToCheckout: true, quantity: qty })}
                 disabled={cartLoading}
                 className="w-full h-12 rounded-xl font-semibold text-[14px] text-white border border-white/10 hover:bg-white/5 transition-all mb-7 disabled:opacity-60 disabled:cursor-wait"
               >
@@ -478,7 +465,7 @@ export default function HomePage() {
       </section>}
 
       {/* ═══════════ TRUST BAR ═══════════ */}
-      <section className="py-14 border-y border-white/[0.04]">
+      <section className="py-8 md:py-14 border-y border-white/[0.04]">
         <div className="max-w-[1400px] mx-auto px-5 md:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
@@ -504,7 +491,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ CAMÉRA DE RECUL ═══════════ */}
-      <section className="px-5 md:px-8 pb-16">
+      <section className="px-5 md:px-8 pb-8 md:pb-16">
         <div className="max-w-[1400px] mx-auto">
           <FadeUp>
             <div className="relative rounded-3xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #0d0d1f 0%, #12121c 100%)' }}>
@@ -600,28 +587,45 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ 01 — CARPLAY FILAIRE ═══════════ */}
-      <section className="py-24 px-5 md:px-8 overflow-hidden">
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8 overflow-hidden">
         <div className="max-w-[1400px] mx-auto">
-          <div className="flex items-end justify-between mb-14">
+          <div className="flex items-end justify-between mb-8 md:mb-14">
             <FadeUp className="relative">
               <SectionNum num="01" />
-              <p className="text-[11px] tracking-[3px] uppercase text-brand-cyan mb-3">Plug &amp; Play</p>
-              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(32px,5vw,56px)' }}>
-                CARPLAY<br />FILAIRE
+              <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-brand-cyan mb-2 sm:mb-3">Plug &amp; Play</p>
+              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
+                CARPLAY FILAIRE
               </h2>
             </FadeUp>
-            <FadeUp delay={0.15} className="hidden md:block pb-2">
+            <FadeUp delay={0.15} className="pb-1">
               <Link to="/carplay-filaire">
-                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-sm text-brand-muted hover:text-white transition-colors cursor-pointer">
+                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-xs sm:text-sm text-brand-muted hover:text-white transition-colors cursor-pointer whitespace-nowrap">
                   Voir tout <ArrowRight size={13} />
                 </motion.span>
               </Link>
             </FadeUp>
           </div>
           {produitsFilaire.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {produitsFilaire.map((p, i) => <ProductCard key={p.id} product={p} index={i} variant="filaire" />)}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                {produitsFilaire.slice(0, 4).map((p, i) => (
+                  <div key={p.id} className={i >= 2 ? 'hidden sm:block' : ''}>
+                    <ProductCard product={p} index={i} variant="filaire" />
+                  </div>
+                ))}
+              </div>
+              {/* Mobile: toujours affiché (on cache 2 produits) — Desktop: affiché si >4 */}
+              <FadeUp delay={0.2} className={`text-center mt-6 ${produitsFilaire.length <= 4 ? 'sm:hidden' : ''}`}>
+                <Link to="/carplay-filaire">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    className="inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-semibold text-sm text-white border border-brand-cyan/25 hover:bg-brand-cyan/[0.06] transition-all"
+                  >
+                    Voir tous les CarPlay filaires <ArrowRight size={14} className="text-brand-cyan" />
+                  </motion.button>
+                </Link>
+              </FadeUp>
+            </>
           )}
         </div>
       </section>
@@ -644,44 +648,57 @@ export default function HomePage() {
       </ParallaxBanner>
 
       {/* ═══════════ 02 — CARPLAY INTÉGRÉ ═══════════ */}
-      <section className="py-24 px-5 md:px-8">
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8">
         <div className="max-w-[1400px] mx-auto">
-          <div className="flex items-end justify-between mb-14">
+          <div className="flex items-end justify-between mb-8 md:mb-14">
             <FadeUp className="relative">
               <SectionNum num="02" />
-              <p className="text-[11px] tracking-[3px] uppercase text-[#a855f7] mb-3">Sur mesure</p>
-              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(32px,5vw,56px)' }}>
-                CARPLAY<br />INTÉGRÉ
+              <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-[#a855f7] mb-2 sm:mb-3">Sur mesure</p>
+              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
+                CARPLAY INTÉGRÉ
               </h2>
             </FadeUp>
-            <FadeUp delay={0.15} className="hidden md:block pb-2">
+            <FadeUp delay={0.15} className="pb-1">
               <Link to="/carplay-integre">
-                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-sm text-brand-muted hover:text-white transition-colors cursor-pointer">
+                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-xs sm:text-sm text-brand-muted hover:text-white transition-colors cursor-pointer whitespace-nowrap">
                   Voir tout <ArrowRight size={13} />
                 </motion.span>
               </Link>
             </FadeUp>
           </div>
           {produitsIntegre.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {produitsIntegre.map((p, i) => <ProductCard key={p.id} product={p} index={i} variant="integre" onTuto={setTutoProduct} />)}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                {produitsIntegre.slice(0, 4).map((p, i) => (
+                  <div key={p.id} className={i >= 2 ? 'hidden sm:block' : ''}>
+                    <ProductCard product={p} index={i} variant="integre" onTuto={setTutoProduct} />
+                  </div>
+                ))}
+              </div>
+              <FadeUp delay={0.2} className={`text-center mt-6 ${produitsIntegre.length <= 4 ? 'sm:hidden' : ''}`}>
+                <Link to="/carplay-integre">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    className="inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-semibold text-sm text-white border border-[#a855f7]/25 hover:bg-[#a855f7]/[0.06] transition-all"
+                  >
+                    Voir tous les CarPlay intégrés <ArrowRight size={14} style={{ color: '#a855f7' }} />
+                  </motion.button>
+                </Link>
+              </FadeUp>
+            </>
           )}
-          <FadeUp delay={0.3} className="text-center mt-6">
-            <p className="text-xs text-[#a855f7]/60">▶ Cliquez sur lecture pour voir le tuto d'installation</p>
-          </FadeUp>
         </div>
       </section>
 
       {/* ═══════════ 03 — INSTALLATION ═══════════ */}
-      <section className="py-24 px-5 md:px-8 border-t border-white/[0.04]">
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8 border-t border-white/[0.04]">
         <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
             <FadeUp className="relative lg:sticky lg:top-32">
               <SectionNum num="03" />
-              <p className="text-[11px] tracking-[3px] uppercase text-brand-gold mb-4">Île-de-France</p>
-              <h2 className="font-display text-white tracking-wider leading-none mb-6" style={{ fontSize: 'clamp(32px,5vw,56px)' }}>
-                INSTALLATION<br />À DOMICILE
+              <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-brand-gold mb-2 sm:mb-4">Île-de-France</p>
+              <h2 className="font-display text-white tracking-wider leading-none mb-4 sm:mb-6" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
+                INSTALLATION À DOMICILE
               </h2>
               <p className="font-body text-brand-muted leading-relaxed max-w-[380px] text-sm mb-8">
                 CarPlay intégré ou caméra de recul — on se déplace chez vous en Île-de-France. Câblage soigné, test complet, départ serein.
@@ -718,19 +735,19 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ 04 — RÉALISATIONS ═══════════ */}
-      <section className="py-24 px-5 md:px-8">
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8">
         <div className="max-w-[1400px] mx-auto">
-          <div className="flex items-end justify-between mb-14">
+          <div className="flex items-end justify-between mb-8 md:mb-14">
             <FadeUp className="relative">
               <SectionNum num="04" />
-              <p className="text-[11px] tracking-[3px] uppercase text-emerald-400 mb-4">Nos réalisations</p>
-              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(32px,5vw,56px)' }}>
-                AVANT /<br />APRÈS
+              <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-emerald-400 mb-2 sm:mb-4">Nos réalisations</p>
+              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
+                AVANT / APRÈS
               </h2>
             </FadeUp>
-            <FadeUp delay={0.15} className="hidden md:block pb-2">
+            <FadeUp delay={0.15} className="pb-1">
               <Link to="/realisations">
-                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-sm text-brand-muted hover:text-white transition-colors cursor-pointer">
+                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-xs sm:text-sm text-brand-muted hover:text-white transition-colors cursor-pointer whitespace-nowrap">
                   Voir tout <ArrowRight size={13} />
                 </motion.span>
               </Link>
@@ -743,12 +760,12 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ 05 — AVIS ═══════════ */}
-      <section className="py-24 px-5 md:px-8 border-t border-white/[0.04]">
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8 border-t border-white/[0.04]">
         <div className="max-w-[1400px] mx-auto">
-          <FadeUp className="relative mb-14">
+          <FadeUp className="relative mb-8 md:mb-14">
             <SectionNum num="05" />
-            <p className="text-[11px] tracking-[3px] uppercase text-brand-gold mb-4">Ils nous font confiance</p>
-            <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(32px,5vw,56px)' }}>
+            <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-brand-gold mb-2 sm:mb-4">Ils nous font confiance</p>
+            <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
               AVIS CLIENTS
             </h2>
           </FadeUp>
@@ -772,12 +789,12 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════ 06 — FAQ ═══════════ */}
-      <section className="py-24 px-5 md:px-8">
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8">
         <div className="max-w-[740px] mx-auto">
-          <FadeUp className="relative mb-14">
+          <FadeUp className="relative mb-8 md:mb-14">
             <SectionNum num="06" />
-            <p className="text-[11px] tracking-[3px] uppercase text-brand-cyan mb-4">Questions fréquentes</p>
-            <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(32px,5vw,56px)' }}>FAQ</h2>
+            <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-brand-cyan mb-2 sm:mb-4">Questions fréquentes</p>
+            <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>FAQ</h2>
           </FadeUp>
           <div className="flex flex-col divide-y divide-white/[0.05]">
             {faq.map((item, i) => (

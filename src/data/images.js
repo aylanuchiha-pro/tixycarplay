@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════
-   IMAGES — TixyCars  (Unsplash — fiables & rapides)
+   IMAGES — TixyCarplay  (Unsplash — fiables & rapides)
    ═══════════════════════════════════════════════════════ */
 
 const U = 'https://images.unsplash.com'

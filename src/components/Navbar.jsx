@@ -37,22 +37,21 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         className="fixed z-50"
         style={{
-          /* Position : pleine largeur → flottant */
           top:    scrolled ? '12px'  : '0px',
-          left:   scrolled ? '16px'  : '0px',
-          right:  scrolled ? '16px'  : '0px',
-          /* Forme */
-          borderRadius: scrolled ? '18px' : '0px',
-          /* Fond */
-          background:     scrolled ? 'rgba(10,10,18,0.88)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px) saturate(1.3)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(1.3)' : 'none',
-          /* Ombre & bordure */
-          boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.07)' : 'none',
-          /* Transition CSS fluide */
+          left:   scrolled ? '20px'  : '0px',
+          right:  scrolled ? '20px'  : '0px',
+          borderRadius: scrolled ? '20px' : '0px',
+          background: scrolled
+            ? 'rgba(8,8,20,0.90)'
+            : 'transparent',
+          backdropFilter: scrolled ? 'blur(28px) saturate(1.5)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(28px) saturate(1.5)' : 'none',
+          boxShadow: scrolled
+            ? '0 8px 40px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.06)'
+            : 'none',
           transition: [
             'top 0.5s cubic-bezier(0.16,1,0.3,1)',
             'left 0.5s cubic-bezier(0.16,1,0.3,1)',
@@ -63,21 +62,42 @@ export default function Navbar() {
           ].join(', '),
         }}
       >
-        {/* Trait du bas quand pas encore flottant */}
+        {/* Filet lumineux doré en bas quand non flottant */}
         {!scrolled && (
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-white/[0.05]" />
+          <div className="absolute bottom-0 left-0 right-0 h-px"
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(212,168,85,0.18), rgba(0,229,255,0.12), transparent)' }}
+          />
+        )}
+        {/* Filet doré en haut quand flottant */}
+        {scrolled && (
+          <div className="absolute top-0 left-0 right-0 h-px rounded-t-[20px] overflow-hidden"
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(212,168,85,0.30), rgba(0,229,255,0.22), transparent)' }}
+          />
         )}
 
         <div className="px-4 sm:px-6 md:px-8 h-[68px] flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+          <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
             <motion.div
-              whileHover={{ rotate: 6, scale: 1.08 }}
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-base"
-              style={{ background: 'linear-gradient(135deg, #00e5ff, #7c3aed)' }}
-            >T</motion.div>
-            <span className="font-display text-[20px] sm:text-[22px] md:text-[26px] tracking-[1px] sm:tracking-[2px] md:tracking-[3px] text-brand-text">
-              Tixycars<span className="hidden sm:inline text-brand-cyan"> CarPlay</span>
+              whileHover={{ rotate: 5, scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-base relative"
+              style={{
+                background: 'linear-gradient(135deg, #d4a855, #f0cc7a, #00e5ff)',
+                boxShadow: '0 0 18px rgba(212,168,85,0.30)',
+              }}
+            >
+              T
+              <span className="absolute inset-0 rounded-xl"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%)' }} />
+            </motion.div>
+            <span className="font-display text-[20px] sm:text-[22px] md:text-[26px] tracking-[2px] sm:tracking-[3px] text-brand-text">
+              Tixy<span style={{
+                background: 'linear-gradient(110deg, #d4a855, #f0cc7a, #d4a855)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>Carplay</span>
             </span>
           </Link>
 
@@ -86,15 +106,23 @@ export default function Navbar() {
             {NAV_LINKS.map((link) => (
               <Link key={link.to} to={link.to}>
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  className={`relative px-3.5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-200 ${
                     isActive(link.to)
-                      ? 'bg-brand-cyan/10 text-brand-cyan'
-                      : 'text-brand-muted hover:text-brand-text hover:bg-white/5'
+                      ? 'text-white'
+                      : 'text-brand-muted hover:text-brand-text hover:bg-white/[0.04]'
                   }`}
                 >
                   {link.label}
+                  {isActive(link.to) && (
+                    <motion.span
+                      layoutId="nav-active"
+                      className="absolute inset-0 rounded-full -z-10"
+                      style={{ background: 'rgba(212,168,85,0.10)', border: '1px solid rgba(212,168,85,0.20)' }}
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                    />
+                  )}
                 </motion.div>
               </Link>
             ))}
@@ -102,25 +130,42 @@ export default function Navbar() {
 
           {/* Panier + burger */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={openCart}
-              className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-black relative"
-              style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
-            >
-              <ShoppingCart className="w-4 h-4" /> Panier
+            {/* Wrapper relatif pour que le badge ne soit pas coupé par overflow-hidden du bouton */}
+            <div className="relative hidden md:block">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={openCart}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[13px] text-black relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)',
+                  backgroundSize: '200% auto',
+                  boxShadow: '0 0 20px rgba(212,168,85,0.22)',
+                }}
+              >
+                <span className="absolute inset-0"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+                <ShoppingCart className="w-4 h-4 relative z-10" />
+                <span className="relative z-10">Panier</span>
+              </motion.button>
               {itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-white text-black text-[10px] font-black flex items-center justify-center leading-none">
+                <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-black flex items-center justify-center leading-none px-1 z-20 pointer-events-none"
+                  style={{ background: '#e53e3e', border: '2px solid #0a0a14', boxShadow: '0 2px 6px rgba(0,0,0,0.5)' }}>
                   {itemCount > 9 ? '9+' : itemCount}
                 </span>
               )}
-            </motion.button>
+            </div>
+
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center text-brand-text rounded-xl hover:bg-white/5 transition-all"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl transition-all"
+              style={{
+                background: mobileOpen ? 'rgba(212,168,85,0.10)' : 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                color: '#eeeef5',
+              }}
             >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
@@ -133,17 +178,23 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25 }}
             className="fixed inset-0 z-40"
-            style={{ background: 'rgba(7,7,13,0.97)', backdropFilter: 'blur(24px)' }}
+            style={{ background: 'rgba(7,7,13,0.97)', backdropFilter: 'blur(32px)' }}
           >
+            {/* Filet doré en haut */}
+            <div className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(212,168,85,0.45), rgba(0,229,255,0.30), transparent)' }}
+            />
+
             {/* Bouton fermer */}
             <div className="flex justify-end px-4 pt-5">
               <button
                 onClick={() => setMobileOpen(false)}
-                className="w-10 h-10 flex items-center justify-center text-brand-muted hover:text-white rounded-xl hover:bg-white/5 transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-xl transition-all"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: '#7a7a95' }}
               >
-                <X size={22} />
+                <X size={20} />
               </button>
             </div>
 
@@ -151,17 +202,21 @@ export default function Navbar() {
               {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.to}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
+                  transition={{ delay: i * 0.055, ease: [0.16,1,0.3,1] }}
                 >
                   <Link
                     to={link.to}
-                    className={`flex items-center py-4 px-4 rounded-2xl text-lg font-medium transition-all ${
+                    className={`flex items-center py-3.5 px-4 rounded-2xl text-[17px] font-medium tracking-wide transition-all ${
                       isActive(link.to)
-                        ? 'bg-brand-cyan/10 text-brand-cyan'
-                        : 'text-brand-muted hover:text-brand-text hover:bg-white/5'
+                        ? 'text-white'
+                        : 'text-brand-muted hover:text-brand-text hover:bg-white/[0.04]'
                     }`}
+                    style={isActive(link.to) ? {
+                      background: 'rgba(212,168,85,0.08)',
+                      border: '1px solid rgba(212,168,85,0.18)',
+                    } : {}}
                   >
                     {link.label}
                   </Link>
@@ -171,14 +226,21 @@ export default function Navbar() {
               <motion.button
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.38 }}
+                transition={{ delay: 0.4 }}
                 onClick={() => { setMobileOpen(false); openCart() }}
-                className="mt-6 w-full py-4 rounded-2xl font-bold text-black text-base flex items-center justify-center gap-2"
-                style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
+                className="mt-6 w-full py-4 rounded-2xl font-bold text-black text-base flex items-center justify-center gap-2 relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)',
+                  backgroundSize: '200% auto',
+                  boxShadow: '0 4px 24px rgba(212,168,85,0.25)',
+                }}
               >
-                <ShoppingCart className="w-5 h-5" /> Voir le panier
+                <span className="absolute inset-0"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+                <ShoppingCart className="w-5 h-5 relative z-10" />
+                <span className="relative z-10">Voir le panier</span>
                 {itemCount > 0 && (
-                  <span className="ml-1 bg-black/20 text-black rounded-full px-2 text-xs font-black">
+                  <span className="relative z-10 ml-1 bg-black/20 text-black rounded-full px-2 text-xs font-black">
                     {itemCount}
                   </span>
                 )}

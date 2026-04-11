@@ -90,7 +90,7 @@ export const produitsIntegre = [
     prix: 329.99,
     prixBarre: 429.99,
     description: 'Remplacement direct pour BMW Série 3 E90/E91/E92 (2005-2012). Android 13, iDrive compatible.',
-    descriptionLongue: 'Conçu spécifiquement pour le BMW Série 3 E90/E91/E92, cet écran s\'installe dans le châssis d\'origine sans aucune modification. Le module CAN-Bus TixyCars conserve toutes les fonctions iDrive (commandes au volant, affichage température, etc.). Rendu 100% OEM, indiscernable de l\'usine.',
+    descriptionLongue: 'Conçu spécifiquement pour le BMW Série 3 E90/E91/E92, cet écran s\'installe dans le châssis d\'origine sans aucune modification. Le module CAN-Bus TixyCarplay conserve toutes les fonctions iDrive (commandes au volant, affichage température, etc.). Rendu 100% OEM, indiscernable de l\'usine.',
     specs: ['10.25" IPS', 'Android 13 + CarPlay', 'iDrive compatible', 'Canbus BMW inclus', 'Commandes volant', 'Bluetooth 5.0', 'Châssis OEM'],
     badge: 'BMW',
     image: images.integre2,
@@ -100,7 +100,7 @@ export const produitsIntegre = [
       'Débranchement batterie + retrait enjoliveurs',
       'Extraction de l\'écran iDrive d\'origine',
       'Déconnexion des câbles CAN-Bus et alimentation',
-      'Branchement du module CAN-Bus TixyCars',
+      'Branchement du module CAN-Bus TixyCarplay',
       'Installation du nouvel écran dans le support OEM',
       'Reconnexion et calibration du système iDrive',
     ],
@@ -314,7 +314,7 @@ export const galerie = [
 
 export const temoignages = [
   { nom: 'Mehdi R.', voiture: 'BMW E90', note: 5, texte: 'Installation impeccable, on dirait que la voiture est sortie d\'usine avec. Je recommande à 200%.' },
-  { nom: 'Sophie L.', voiture: 'Golf 7', note: 5, texte: 'J\'hésitais entre le garage et TixyCars. Meilleur choix possible, le rendu est incroyable et le prix imbattable.' },
+  { nom: 'Sophie L.', voiture: 'Golf 7', note: 5, texte: 'J\'hésitais entre le garage et TixyCarplay. Meilleur choix possible, le rendu est incroyable et le prix imbattable.' },
   { nom: 'Karim B.', voiture: 'Peugeot 308', note: 5, texte: 'Pose en 2h chez moi à Créteil. Caméra de recul + CarPlay, ma voiture a pris 10 ans d\'avance.' },
   { nom: 'Julie M.', voiture: 'Clio 4', note: 4, texte: 'Très bon service, le CarPlay filaire sur pare-brise est top pour le prix. Livraison rapide.' },
   { nom: 'Thomas D.', voiture: 'Mercedes C220', note: 5, texte: 'Le système intégré Mercedes est parfait. Finition OEM, zéro défaut.' },

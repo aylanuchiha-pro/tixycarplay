@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ShoppingCart, ArrowRight, Trash2, Package } from 'lucide-react'
 import { useCart } from '../context/CartContext'
-import { getCart } from '../services/shopify'
+import { getCart, removeCartLines } from '../services/shopify'
 
 export default function CartDrawer() {
-  const { isOpen, closeCart, cartId, checkoutUrl, itemCount } = useCart()
-  const [lines, setLines]     = useState([])
-  const [total, setTotal]     = useState(null)
+  const { isOpen, closeCart, cartId, checkoutUrl, itemCount, syncCart } = useCart()
+  const [lines,    setLines]    = useState([])
+  const [total,    setTotal]    = useState(null)
   const [fetching, setFetching] = useState(false)
+  const [removing, setRemoving] = useState(null) // lineId en cours de suppression
 
   // Recharger le contenu du panier à chaque ouverture
   useEffect(() => {
@@ -24,6 +25,24 @@ export default function CartDrawer() {
       .catch(console.error)
       .finally(() => setFetching(false))
   }, [isOpen, cartId])
+
+  const handleRemove = useCallback(async (lineId) => {
+    if (!cartId || removing) return
+    setRemoving(lineId)
+    try {
+      const cart = await removeCartLines(cartId, [lineId])
+      if (cart) {
+        const newLines = cart.lines?.edges?.map(({ node }) => node) ?? []
+        setLines(newLines)
+        setTotal(cart.cost?.totalAmount ?? null)
+        syncCart(cart)
+      }
+    } catch (err) {
+      console.error('[CartDrawer] suppression échouée', err)
+    } finally {
+      setRemoving(null)
+    }
+  }, [cartId, removing, syncCart])
 
   const handleCheckout = () => {
     if (checkoutUrl) window.location.href = checkoutUrl
@@ -119,48 +138,71 @@ export default function CartDrawer() {
               ) : (
                 /* Liste des articles */
                 <ul className="flex flex-col gap-4 mt-2">
-                  {lines.map((line) => {
-                    const price = parseFloat(line.merchandise?.priceV2?.amount ?? 0)
-                    const lineTotal = (price * line.quantity).toFixed(2)
-                    return (
-                      <li
-                        key={line.id}
-                        className="flex items-start gap-4 py-4"
-                        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                      >
-                        {/* Icône produit */}
-                        <div
-                          className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{ background: 'rgba(0,229,255,0.07)', border: '1px solid rgba(0,229,255,0.12)' }}
-                        >
-                          <ShoppingCart size={16} className="text-brand-cyan opacity-60" />
-                        </div>
+                  <AnimatePresence initial={false}>
+                    {lines.map((line) => {
+                      const price     = parseFloat(line.merchandise?.priceV2?.amount ?? 0)
+                      const lineTotal = (price * line.quantity).toFixed(2)
+                      const isRemoving = removing === line.id
 
-                        {/* Infos */}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-display text-sm tracking-wide text-white truncate">
-                            {line.merchandise?.product?.title ?? 'Produit'}
-                          </p>
-                          {line.merchandise?.title && line.merchandise.title !== 'Default Title' && (
-                            <p className="font-body text-[11px] text-brand-muted mt-0.5">
-                              {line.merchandise.title}
-                            </p>
-                          )}
-                          <div className="flex items-center gap-3 mt-2">
-                            <span className="font-body text-xs text-brand-muted">
-                              Qté : {line.quantity}
-                            </span>
-                            <span
-                              className="font-display text-sm"
-                              style={{ color: '#00e5ff' }}
-                            >
-                              {lineTotal}€
-                            </span>
+                      return (
+                        <motion.li
+                          key={line.id}
+                          initial={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0 }}
+                          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                          className="flex items-start gap-4 py-4 overflow-hidden"
+                          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+                        >
+                          {/* Icône produit */}
+                          <div
+                            className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ background: 'rgba(0,229,255,0.07)', border: '1px solid rgba(0,229,255,0.12)' }}
+                          >
+                            <ShoppingCart size={16} className="text-brand-cyan opacity-60" />
                           </div>
-                        </div>
-                      </li>
-                    )
-                  })}
+
+                          {/* Infos */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-display text-sm tracking-wide text-white truncate">
+                              {line.merchandise?.product?.title ?? 'Produit'}
+                            </p>
+                            {line.merchandise?.title && line.merchandise.title !== 'Default Title' && (
+                              <p className="font-body text-[11px] text-brand-muted mt-0.5">
+                                {line.merchandise.title}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-3 mt-2">
+                              <span className="font-body text-xs text-brand-muted">
+                                Qté : {line.quantity}
+                              </span>
+                              <span className="font-display text-sm" style={{ color: '#00e5ff' }}>
+                                {lineTotal}€
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Bouton supprimer */}
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleRemove(line.id)}
+                            disabled={!!removing}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-all disabled:opacity-40"
+                            style={{
+                              background: 'rgba(239,68,68,0.08)',
+                              border: '1px solid rgba(239,68,68,0.18)',
+                            }}
+                            title="Supprimer l'article"
+                          >
+                            {isRemoving
+                              ? <span className="w-3 h-3 border-2 border-red-400/40 border-t-red-400 rounded-full animate-spin" />
+                              : <Trash2 size={13} className="text-red-400" />
+                            }
+                          </motion.button>
+                        </motion.li>
+                      )
+                    })}
+                  </AnimatePresence>
                 </ul>
               )}
             </div>

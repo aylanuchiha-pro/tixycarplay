@@ -80,7 +80,7 @@ export default function ContactPage() {
               <div className="space-y-4">
                 {[
                   { icon: Phone, t1: '06 XX XX XX XX', t2: 'Appel & WhatsApp', href: 'tel:+33600000000' },
-                  { icon: Mail, t1: 'contact@tixycars.fr', t2: 'Réponse sous 24h', href: 'mailto:contact@tixycars.fr' },
+                  { icon: Mail, t1: 'contact@tixycarplay.fr', t2: 'Réponse sous 24h', href: 'mailto:contact@tixycarplay.fr' },
                   { icon: MapPin, t1: 'Île-de-France', t2: 'Domicile ou atelier', href: null },
                 ].map(({ icon: Icon, t1, t2, href }, i) => {
                   const El = href ? 'a' : 'div'

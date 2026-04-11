@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import TutoModal from '../components/TutoModal'
 import ProductCard from '../components/ProductCard'
-import { getProductByHandle, normalizeShopifyProduct, getCollectionProducts } from '../services/shopify'
+import { getProductByHandle, normalizeShopifyProduct, getCollectionProducts, getFirstAvailableVariant, CAMERA_HANDLE } from '../services/shopify'
 import { useShopifyCart } from '../hooks/useShopifyCart'
 
 /* ─── Couleurs par type ─── */
@@ -51,13 +51,14 @@ function Stars({ note = 5 }) {
 }
 
 /* ─── Option caméra ─── */
-function CameraOption({ option, selected, onToggle }) {
-  const isFree = option.prix === 0
+function CameraOption({ cameraProduct, selected, onToggle }) {
+  const unavailable = cameraProduct && !cameraProduct.availableForSale
   return (
     <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={onToggle}
-      className="w-full text-left rounded-2xl border p-4 flex items-center gap-4 transition-all"
+      whileTap={unavailable ? {} : { scale: 0.98 }}
+      onClick={unavailable ? undefined : onToggle}
+      disabled={unavailable}
+      className="w-full text-left rounded-2xl border p-4 flex items-center gap-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       style={selected
         ? { background: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.4)' }
         : { background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.08)' }
@@ -77,13 +78,19 @@ function CameraOption({ option, selected, onToggle }) {
         <Camera size={18} className="text-emerald-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-body text-sm font-semibold text-brand-text">Ajouter une caméra de recul HD</p>
-        <p className="font-body text-xs text-brand-muted mt-0.5">170° grand angle · Vision nocturne · IP67 · Plug & Play</p>
+        <p className="font-body text-sm font-semibold text-brand-text">
+          {cameraProduct?.nom ?? 'Caméra de recul HD'}
+        </p>
+        <p className="font-body text-xs text-brand-muted mt-0.5">
+          {unavailable ? 'Stock épuisé' : '170° grand angle · Vision nocturne · IP67 · Plug & Play'}
+        </p>
       </div>
       <div className="flex-shrink-0 text-right">
-        {isFree
-          ? <span className="font-display text-lg text-emerald-400">{option.label ?? 'Offerte'}</span>
-          : <span className="font-display text-lg" style={{ color: '#34d399' }}>+{option.prix}€</span>
+        {cameraProduct
+          ? <span className="font-display text-lg" style={{ color: '#34d399' }}>
+              +{cameraProduct.prix.toFixed(2)}€
+            </span>
+          : <span className="w-16 h-5 rounded bg-white/[0.06] animate-pulse inline-block" />
         }
       </div>
     </motion.button>
@@ -97,11 +104,13 @@ export default function ProductPage() {
   const [product,        setProduct]        = useState(null)
   const [related,        setRelated]        = useState([])
   const [loading,        setLoading]        = useState(true)
+  const [cameraProduct,  setCameraProduct]  = useState(null)   // produit caméra Shopify normalisé
+  const [cameraLoading,  setCameraLoading]  = useState(false)
   const [cameraSelected, setCameraSelected] = useState(false)
   const [addedToCart,    setAddedToCart]    = useState(false)
   const [tutoOpen,       setTutoOpen]       = useState(false)
 
-  const { addToCart, loading: cartLoading, error: cartError } = useShopifyCart()
+  const { addToCart, addBundleToCart, loading: cartLoading, error: cartError } = useShopifyCart()
 
   /* ─── Chargement depuis Shopify ─── */
   useEffect(() => {
@@ -124,6 +133,21 @@ export default function ProductPage() {
 
     return () => { cancelled = true }
   }, [id])
+
+  /* ─── Chargement du produit caméra si option disponible ─── */
+  useEffect(() => {
+    if (!product?.cameraOption?.available) return
+    setCameraLoading(true)
+    setCameraProduct(null)
+    setCameraSelected(false)
+    getProductByHandle(CAMERA_HANDLE)
+      .then(node => {
+        if (!node) return
+        setCameraProduct(normalizeShopifyProduct(node, 'accessoire'))
+      })
+      .catch(() => {})
+      .finally(() => setCameraLoading(false))
+  }, [product?.shopifyHandle, product?.cameraOption?.available])
 
   /* ─── Produits liés (même collection) ─── */
   useEffect(() => {
@@ -163,15 +187,30 @@ export default function ProductPage() {
     )
   }
 
-  const acc       = ACCENT[product.type] ?? ACCENT.filaire
-  const totalPrix = product.prix + (cameraSelected && product.cameraOption ? product.cameraOption.prix : 0)
+  const acc        = ACCENT[product.type] ?? ACCENT.filaire
+  const cameraPrix = cameraProduct?.prix ?? 0
+  const totalPrix  = product.prix + (cameraSelected && cameraProduct ? cameraPrix : 0)
 
   const handleAddToCart = async () => {
-    if (product.shopifyHandle) {
-      await addToCart(product)
-    } else {
+    if (!product.shopifyHandle) {
       setAddedToCart(true)
       setTimeout(() => setAddedToCart(false), 2200)
+      return
+    }
+
+    // Si caméra sélectionnée, on ajoute les deux articles en un seul appel panier
+    if (cameraSelected && cameraProduct) {
+      const mainNode     = await getProductByHandle(product.shopifyHandle)
+      const mainVariant  = getFirstAvailableVariant(mainNode)
+      const camVariant   = cameraProduct.variants?.find(v => v.availableForSale) ?? cameraProduct.variants?.[0]
+
+      const lines = [
+        ...(mainVariant ? [{ merchandiseId: mainVariant.id, quantity: 1 }] : []),
+        ...(camVariant  ? [{ merchandiseId: camVariant.id,  quantity: 1 }] : []),
+      ]
+      if (lines.length) await addBundleToCart(lines)
+    } else {
+      await addToCart(product)
     }
   }
 
@@ -302,21 +341,26 @@ export default function ProductPage() {
               </div>
             )}
 
-            {/* Option caméra */}
-            {product.cameraOption && (
+            {/* Option caméra — affichée si le produit a le tag camera:non-incluse */}
+            {product.cameraOption?.available && (
               <div>
                 <p className="font-body text-xs tracking-[2px] uppercase text-brand-muted mb-3">Option</p>
-                <CameraOption
-                  option={product.cameraOption}
-                  selected={cameraSelected}
-                  onToggle={() => setCameraSelected((v) => !v)}
-                />
-                {cameraSelected && (
+                {cameraLoading ? (
+                  <div className="w-full h-[72px] rounded-2xl animate-pulse"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                ) : (
+                  <CameraOption
+                    cameraProduct={cameraProduct}
+                    selected={cameraSelected}
+                    onToggle={() => setCameraSelected((v) => !v)}
+                  />
+                )}
+                {cameraSelected && cameraProduct && (
                   <motion.p
                     initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
                     className="font-body text-xs text-emerald-400 mt-2 pl-1"
                   >
-                    Caméra de recul HD incluse dans votre commande.
+                    Caméra de recul incluse dans votre commande — ajoutée automatiquement au panier.
                   </motion.p>
                 )}
               </div>
