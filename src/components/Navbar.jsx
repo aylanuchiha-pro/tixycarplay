@@ -75,50 +75,38 @@ export default function Navbar() {
           />
         )}
 
-        <div className="px-4 sm:px-6 md:px-8 h-[68px] flex items-center justify-between">
-          {/* Logo */}
+        {/* ─── Desktop layout ─── */}
+        <div className="hidden lg:flex px-6 md:px-8 h-[68px] items-center justify-between">
+          {/* Logo gauche */}
           <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
             <motion.div
               whileHover={{ rotate: 5, scale: 1.08 }}
               transition={{ type: 'spring', stiffness: 300 }}
-              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-base relative"
-              style={{
-                background: 'linear-gradient(135deg, #d4a855, #f0cc7a, #00e5ff)',
-                boxShadow: '0 0 18px rgba(212,168,85,0.30)',
-              }}
+              className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-black text-base relative"
+              style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a, #00e5ff)', boxShadow: '0 0 18px rgba(212,168,85,0.30)' }}
             >
               T
               <span className="absolute inset-0 rounded-xl"
                 style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%)' }} />
             </motion.div>
-            <span className="font-display text-[20px] sm:text-[22px] md:text-[26px] tracking-[2px] sm:tracking-[3px] text-brand-text">
-              Tixy<span style={{
-                background: 'linear-gradient(110deg, #d4a855, #f0cc7a, #d4a855)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>Carplay</span>
+            <span className="font-display text-[26px] tracking-[3px] text-brand-text">
+              Tixy<span style={{ background: 'linear-gradient(110deg, #d4a855, #f0cc7a, #d4a855)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Carplay</span>
             </span>
           </Link>
 
-          {/* Liens desktop */}
-          <div className="hidden lg:flex items-center gap-0.5">
+          {/* Liens desktop centre */}
+          <div className="flex items-center gap-0.5">
             {NAV_LINKS.map((link) => (
               <Link key={link.to} to={link.to}>
                 <motion.div
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   className={`relative px-3.5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-200 ${
-                    isActive(link.to)
-                      ? 'text-white'
-                      : 'text-brand-muted hover:text-brand-text hover:bg-white/[0.04]'
+                    isActive(link.to) ? 'text-white' : 'text-brand-muted hover:text-brand-text hover:bg-white/[0.04]'
                   }`}
                 >
                   {link.label}
                   {isActive(link.to) && (
-                    <motion.span
-                      layoutId="nav-active"
-                      className="absolute inset-0 rounded-full -z-10"
+                    <motion.span layoutId="nav-active" className="absolute inset-0 rounded-full -z-10"
                       style={{ background: 'rgba(212,168,85,0.10)', border: '1px solid rgba(212,168,85,0.20)' }}
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
                     />
@@ -128,46 +116,77 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Panier + burger */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            {/* Wrapper relatif pour que le badge ne soit pas coupé par overflow-hidden du bouton */}
-            <div className="relative hidden md:block">
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={openCart}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[13px] text-black relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)',
-                  backgroundSize: '200% auto',
-                  boxShadow: '0 0 20px rgba(212,168,85,0.22)',
-                }}
-              >
-                <span className="absolute inset-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
-                <ShoppingCart className="w-4 h-4 relative z-10" />
-                <span className="relative z-10">Panier</span>
-              </motion.button>
-              {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-black flex items-center justify-center leading-none px-1 z-20 pointer-events-none"
-                  style={{ background: '#e53e3e', border: '2px solid #0a0a14', boxShadow: '0 2px 6px rgba(0,0,0,0.5)' }}>
-                  {itemCount > 9 ? '9+' : itemCount}
-                </span>
-              )}
-            </div>
-
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl transition-all"
-              style={{
-                background: mobileOpen ? 'rgba(212,168,85,0.10)' : 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                color: '#eeeef5',
-              }}
+          {/* Panier desktop droite */}
+          <div className="relative flex-shrink-0">
+            <motion.button
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+              onClick={openCart}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[13px] text-black relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)', backgroundSize: '200% auto', boxShadow: '0 0 20px rgba(212,168,85,0.22)' }}
             >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+              <span className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+              <ShoppingCart className="w-4 h-4 relative z-10" />
+              <span className="relative z-10">Panier</span>
+            </motion.button>
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-black flex items-center justify-center leading-none px-1 z-20 pointer-events-none"
+                style={{ background: '#e53e3e', border: '2px solid #0a0a14', boxShadow: '0 2px 6px rgba(0,0,0,0.5)' }}>
+                {itemCount > 9 ? '9+' : itemCount}
+              </span>
+            )}
           </div>
+        </div>
+
+        {/* ─── Mobile layout : panier | logo centré | burger ─── */}
+        <div className="lg:hidden px-4 h-[68px] flex items-center">
+
+          {/* GAUCHE : bouton panier doré */}
+          <div className="relative flex-shrink-0">
+            <motion.button
+              whileTap={{ scale: 0.94 }}
+              onClick={openCart}
+              className="w-[42px] h-[42px] rounded-xl flex items-center justify-center relative overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a)', boxShadow: '0 0 16px rgba(212,168,85,0.30)' }}
+            >
+              <span className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 55%)' }} />
+              <ShoppingCart className="w-[18px] h-[18px] text-black relative z-10" />
+            </motion.button>
+            {itemCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] rounded-full text-white text-[9px] font-black flex items-center justify-center leading-none px-0.5 z-20 pointer-events-none"
+                style={{ background: '#e53e3e', border: '2px solid #0a0a14' }}>
+                {itemCount > 9 ? '9+' : itemCount}
+              </span>
+            )}
+          </div>
+
+          {/* CENTRE : logo TixyCars centré */}
+          <Link to="/" className="flex-1 flex items-center justify-center gap-2 group">
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              className="w-8 h-8 rounded-xl flex items-center justify-center font-black text-black text-sm relative"
+              style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a)', boxShadow: '0 0 14px rgba(212,168,85,0.28)' }}
+            >
+              T
+              <span className="absolute inset-0 rounded-xl"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%)' }} />
+            </motion.div>
+            <span className="font-display text-[20px] tracking-[2px] text-brand-text">
+              Tixy<span style={{ background: 'linear-gradient(110deg, #d4a855, #f0cc7a, #d4a855)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Carplay</span>
+            </span>
+          </Link>
+
+          {/* DROITE : burger */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="flex-shrink-0 w-[42px] h-[42px] flex items-center justify-center rounded-xl transition-all"
+            style={{
+              background: mobileOpen ? 'rgba(212,168,85,0.10)' : 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              color: '#eeeef5',
+            }}
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </motion.nav>
 

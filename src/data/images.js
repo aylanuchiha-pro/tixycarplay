@@ -42,7 +42,7 @@ export const images = {
   acc6: `${U}/photo-1609521263047-f8f205293f24?w=700&q=80&auto=format&fit=crop`,
 
   // ─── BACKGROUNDS ───
-  bgDark:    `${U}/photo-1492144534655-ae79c964c9d7?w=1600&q=85&auto=format&fit=crop`,
+  bgDark:    '/images/hero-carplay.jpeg',
   bgRoad:    `${U}/photo-1449965408869-eaa3f722e40d?w=1600&q=85&auto=format&fit=crop`,
   bgCarClose:`${U}/photo-1542362567-b07e54358753?w=1600&q=85&auto=format&fit=crop`,
 }

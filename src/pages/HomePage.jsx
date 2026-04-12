@@ -141,137 +141,358 @@ export default function HomePage() {
       {tutoProduct && <TutoModal product={tutoProduct} onClose={() => setTutoProduct(null)} />}
 
       {/* ═══════════ HERO ═══════════ */}
-      <section ref={heroRef} className="relative min-h-screen flex flex-col overflow-hidden bg-brand-dark">
+      <section ref={heroRef} className="relative flex flex-col overflow-hidden bg-brand-dark" style={{ minHeight: '100svh' }}>
 
-        {/* ── Background image ── */}
-        <motion.div className="absolute inset-0 scale-110" style={{ y: heroImgY }}>
-          <img src={images.bgDark} alt="" className="img-cover" loading="eager" />
+        {/* ════ MOBILE HERO (masqué sur md+) ════ */}
+        <div className="md:hidden flex flex-col" style={{ minHeight: '100svh' }}>
 
-          {/* Mobile : photo visible en haut, fade vers bas */}
-          <div className="absolute inset-0 md:hidden" style={{
-            background: 'linear-gradient(to bottom, rgba(7,7,13,0.3) 0%, rgba(7,7,13,0.5) 40%, rgba(7,7,13,0.92) 70%, #07070d 100%)'
-          }} />
-          {/* Desktop : fade horizontal gauche → droite */}
-          <div className="absolute inset-0 hidden md:block" style={{
-            background: 'linear-gradient(105deg, #07070d 40%, rgba(7,7,13,0.80) 65%, rgba(7,7,13,0.35) 100%)'
-          }} />
-        </motion.div>
+          {/* ── Image de fond intégrée (même image que desktop) ── */}
+          <div className="absolute inset-0">
+            <img src={images.bgDark} alt="" className="img-cover" loading="eager" />
+            {/* Overlay : sombre en haut pour lisibilité du texte, s'éclaircit au centre pour voir l'image, sombre en bas pour les boutons */}
+            <div className="absolute inset-0" style={{
+              background: 'linear-gradient(to bottom, rgba(7,7,13,0.82) 0%, rgba(7,7,13,0.35) 38%, rgba(7,7,13,0.35) 62%, rgba(7,7,13,0.88) 100%)'
+            }} />
+          </div>
 
-        {/* ── Contenu — centré verticalement sur toutes les tailles ── */}
-        <motion.div
-          className="relative z-10 flex-1 flex items-center"
-          style={{ opacity: heroOpacity }}
-        >
-          <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 pt-24 pb-8 md:pt-36 md:pb-16">
+          {/* Filet lumineux en haut */}
+          <div className="absolute top-[68px] left-0 right-0 h-px z-10"
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(212,168,85,0.28), rgba(212,168,85,0.15), transparent)' }} />
 
+          {/* ── TEXTE HAUT centré ── */}
+          <motion.div
+            className="relative z-10 px-6 text-center"
+            style={{ paddingTop: '80px' }}
+            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
             {/* Eyebrow */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.7 }}
-              className="flex items-center gap-2 mb-4 md:mb-10"
-            >
-              <span className="w-5 md:w-8 h-px bg-brand-cyan flex-shrink-0" />
-              <span className="text-[10px] md:text-[11px] tracking-[2px] md:tracking-[4px] uppercase font-semibold" style={{ color: '#00e5ff' }}>
-                Installation à domicile<span className="hidden sm:inline"> · Île-de-France</span>
-              </span>
-            </motion.div>
-
-            {/* Titres */}
-            <div className="overflow-hidden mb-4 md:mb-10">
-              <motion.h1
-                initial={{ y: '110%' }} animate={{ y: 0 }}
-                transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display leading-none"
-                style={{ fontSize: 'clamp(32px, 10vw, 160px)' }}
-              >
-                <span className="text-white">TIXY</span><span style={{
-                  background: 'linear-gradient(90deg, #00e5ff, #7c3aed)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>CARPLAY</span>
-              </motion.h1>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="w-5 h-px flex-shrink-0" style={{ background: 'linear-gradient(90deg, transparent, #d4a855)' }} />
+              <p className="text-[10px] tracking-[3px] uppercase font-semibold" style={{ color: '#d4a855' }}>
+                Installation à domicile · Île-de-France
+              </p>
+              <span className="w-5 h-px flex-shrink-0" style={{ background: 'linear-gradient(90deg, #d4a855, transparent)' }} />
             </div>
 
+            {/* Titre */}
+            <h1 className="font-display font-semibold leading-[0.92] tracking-wide mb-2" style={{ fontSize: 'clamp(52px, 16vw, 80px)' }}>
+              <span className="text-white/90">Tixy</span><span style={{
+                background: 'linear-gradient(110deg, #b8892a 0%, #f0cc7a 35%, #d4a855 55%, #f5e09a 80%, #c9a44a 100%)',
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>Carplay</span>
+            </h1>
+
+            {/* Sous-titre italique */}
+            <p className="font-display italic text-white/45 mb-3" style={{ fontSize: 'clamp(15px, 4.5vw, 20px)', letterSpacing: '0.02em' }}>
+              Le meilleur du CarPlay, chez vous.
+            </p>
+
             {/* Description */}
-            <motion.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className="font-body text-brand-muted text-[13px] sm:text-[15px] leading-relaxed mb-6 md:mb-8 max-w-[480px]"
-            >
+            <p className="font-body text-white/50 text-[12px] leading-relaxed max-w-[260px] mx-auto">
               Boîtier plug&amp;play ou autoradio intégré —{' '}
-              <span className="text-white/75">on se déplace chez vous</span>.
-            </motion.p>
+              <span className="text-white/70">on se déplace chez vous</span>.
+            </p>
+          </motion.div>
 
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="flex flex-col sm:flex-row gap-2.5"
-            >
-              <Link to="/carplay-filaire" className="w-full sm:w-auto">
-                <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-[14px] text-black flex items-center justify-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
-                >
-                  Découvrir les offres <ArrowRight size={15} />
-                </motion.button>
-              </Link>
-              <Link to="/installation" className="w-full sm:w-auto">
-                <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-[14px] text-white border border-white/20 hover:bg-white/[0.06] transition-all text-center"
-                >
-                  Réserver une installation
-                </motion.button>
-              </Link>
-            </motion.div>
+          {/* Espace central — l'image de fond s'y révèle */}
+          <div className="flex-1" />
 
-            {/* Badges — desktop uniquement */}
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              transition={{ delay: 1.0, duration: 0.7 }}
-              className="hidden sm:flex flex-wrap gap-2 mt-10"
-            >
+          {/* ── BADGES + BOUTONS BAS ── */}
+          <motion.div
+            className="relative z-10 px-5 pb-6 flex flex-col gap-3"
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* Badges juste au-dessus des boutons */}
+            <div className="flex flex-wrap justify-center gap-2 mb-1">
               {[
-                { label: 'CarPlay Filaire',  color: '#00e5ff', bg: 'rgba(0,229,255,0.08)',  border: 'rgba(0,229,255,0.25)' },
-                { label: 'CarPlay Intégré',  color: '#a78bfa', bg: 'rgba(124,58,237,0.10)', border: 'rgba(124,58,237,0.30)' },
-                { label: 'Caméra de recul',  color: '#34d399', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.25)' },
+                { label: 'CarPlay Filaire',  color: '#d4a855', bg: 'rgba(212,168,85,0.08)',  border: 'rgba(212,168,85,0.22)' },
+                { label: 'CarPlay Intégré',  color: '#f0cc7a', bg: 'rgba(240,204,122,0.07)', border: 'rgba(240,204,122,0.20)' },
+                { label: 'Caméra de recul',  color: '#c8c8d8', bg: 'rgba(200,200,216,0.06)', border: 'rgba(200,200,216,0.18)' },
               ].map(b => (
                 <span key={b.label}
-                  className="px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wide uppercase"
+                  className="px-2.5 py-1 rounded-full text-[9px] font-semibold tracking-wide uppercase"
                   style={{ background: b.bg, border: `1px solid ${b.border}`, color: b.color }}
                 >
                   {b.label}
                 </span>
               ))}
-            </motion.div>
+            </div>
 
-          </div>
-        </motion.div>
+            <Link to="/carplay-filaire" className="w-full">
+              <motion.button whileTap={{ scale: 0.97 }}
+                className="w-full py-4 rounded-2xl font-semibold text-[14px] text-black flex items-center justify-center gap-2 relative overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)', backgroundSize: '200% auto', boxShadow: '0 4px 24px rgba(212,168,85,0.30)' }}
+              >
+                <span className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+                <span className="relative z-10">Découvrir les offres</span>
+                <ArrowRight size={15} className="relative z-10" />
+              </motion.button>
+            </Link>
+            <Link to="/installation" className="w-full">
+              <motion.button whileTap={{ scale: 0.97 }}
+                className="w-full py-3.5 rounded-2xl font-semibold text-[14px] text-white/80 border text-center"
+                style={{ borderColor: 'rgba(212,168,85,0.25)', background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)' }}
+              >
+                Réserver une installation
+              </motion.button>
+            </Link>
+          </motion.div>
 
-        {/* ── Bande stats ── */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="relative z-10 border-t border-white/[0.06]"
-        >
-          <div className="max-w-[1400px] mx-auto px-5 md:px-12 py-4 md:py-6 grid grid-cols-4 md:flex md:divide-x divide-white/[0.06]">
-            {[
-              { val: 500, suf: '+',    label: 'Installations' },
-              { val: 98,  suf: '%',    label: 'Satisfaits' },
-              { val: 48,  suf: 'h',    label: 'Livraison' },
-              { val: 2,   suf: ' ans', label: 'Garantie' },
-            ].map((s, i) => (
-              <div key={i} className="md:flex-1 md:px-8 text-center md:text-left first:pl-0 last:pr-0">
-                <p className="font-display text-xl md:text-3xl text-white leading-none">
-                  <CountUp target={s.val} suffix={s.suf} />
-                </p>
-                <p className="font-body text-[10px] md:text-xs text-brand-muted mt-1">{s.label}</p>
+          {/* ── Bande stats mobile ── */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="relative z-10 border-t border-white/[0.06]"
+          >
+            <div className="px-4 py-3 grid grid-cols-4">
+              {[
+                { val: 500, suf: '+',    label: 'Installations' },
+                { val: 98,  suf: '%',    label: 'Satisfaits' },
+                { val: 48,  suf: 'h',    label: 'Livraison' },
+                { val: 2,   suf: ' ans', label: 'Garantie' },
+              ].map((s, i) => (
+                <div key={i} className="text-center">
+                  <p className="font-display text-lg text-white leading-none">
+                    <CountUp target={s.val} suffix={s.suf} />
+                  </p>
+                  <p className="font-body text-[9px] text-brand-muted mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ════ DESKTOP HERO (masqué sur mobile) ════ */}
+        <div className="hidden md:flex md:flex-col md:flex-1">
+
+          {/* ── Background image desktop ── */}
+          <motion.div className="absolute inset-0 scale-110" style={{ y: heroImgY }}>
+            <img src={images.bgDark} alt="" className="img-cover" loading="eager" />
+            <div className="absolute inset-0" style={{
+              background: 'linear-gradient(105deg, #07070d 40%, rgba(7,7,13,0.80) 65%, rgba(7,7,13,0.35) 100%)'
+            }} />
+          </motion.div>
+
+          {/* ── Contenu desktop ── */}
+          <motion.div
+            className="relative z-10 flex-1 flex items-center"
+            style={{ opacity: heroOpacity }}
+          >
+            <div className="w-full max-w-[1400px] mx-auto px-12 pt-36 pb-16">
+
+              {/* Eyebrow */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.7 }}
+                className="flex items-center gap-3 mb-10"
+              >
+                <span className="w-8 h-px flex-shrink-0" style={{ background: 'linear-gradient(90deg, #d4a855, #f0cc7a)' }} />
+                <span className="text-[11px] tracking-[4px] uppercase font-semibold" style={{ color: '#d4a855' }}>
+                  Installation à domicile · Île-de-France
+                </span>
+              </motion.div>
+
+              {/* Titres */}
+              <div className="overflow-hidden mb-6">
+                <motion.h1
+                  initial={{ y: '110%' }} animate={{ y: 0 }}
+                  transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-semibold leading-[0.92] tracking-wide"
+                  style={{ fontSize: 'clamp(64px, 9.5vw, 150px)' }}
+                >
+                  <span className="text-white/90">Tixy</span><span style={{
+                    background: 'linear-gradient(110deg, #b8892a 0%, #f0cc7a 35%, #d4a855 55%, #f5e09a 80%, #c9a44a 100%)',
+                    backgroundSize: '200% auto',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}>Carplay</span>
+                </motion.h1>
               </div>
-            ))}
-          </div>
-        </motion.div>
+
+              {/* Sous-titre élégant */}
+              <motion.p
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55, duration: 0.9 }}
+                className="font-display italic text-white/40 mb-10"
+                style={{ fontSize: 'clamp(22px, 2.5vw, 36px)', letterSpacing: '0.02em' }}
+              >
+                Le meilleur du CarPlay, chez vous.
+              </motion.p>
+
+              {/* Description */}
+              <motion.p
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.8 }}
+                className="font-body text-brand-muted text-[15px] leading-relaxed mb-8 max-w-[440px]"
+              >
+                Boîtier plug&amp;play ou autoradio intégré —{' '}
+                <span className="text-white/75">on se déplace chez vous</span>.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                className="flex flex-row gap-3"
+              >
+                <Link to="/carplay-filaire">
+                  <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    className="px-8 py-4 rounded-xl font-semibold text-[14px] text-black flex items-center justify-center gap-2 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)', backgroundSize: '200% auto', boxShadow: '0 4px 28px rgba(212,168,85,0.28)' }}
+                  >
+                    <span className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)' }} />
+                    <span className="relative z-10">Découvrir les offres</span>
+                    <ArrowRight size={15} className="relative z-10" />
+                  </motion.button>
+                </Link>
+                <Link to="/installation">
+                  <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    className="px-8 py-4 rounded-xl font-semibold text-[14px] text-white/80 border transition-all text-center hover:bg-white/[0.04]"
+                    style={{ borderColor: 'rgba(212,168,85,0.25)' }}
+                  >
+                    Réserver une installation
+                  </motion.button>
+                </Link>
+              </motion.div>
+
+              {/* Badges desktop */}
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                transition={{ delay: 1.0, duration: 0.7 }}
+                className="flex flex-wrap gap-2 mt-10"
+              >
+                {[
+                  { label: 'CarPlay Filaire',  color: '#d4a855', bg: 'rgba(212,168,85,0.08)',  border: 'rgba(212,168,85,0.22)' },
+                  { label: 'CarPlay Intégré',  color: '#f0cc7a', bg: 'rgba(240,204,122,0.07)', border: 'rgba(240,204,122,0.20)' },
+                  { label: 'Caméra de recul',  color: '#c8c8d8', bg: 'rgba(200,200,216,0.06)', border: 'rgba(200,200,216,0.18)' },
+                ].map(b => (
+                  <span key={b.label}
+                    className="px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wide uppercase"
+                    style={{ background: b.bg, border: `1px solid ${b.border}`, color: b.color }}
+                  >
+                    {b.label}
+                  </span>
+                ))}
+              </motion.div>
+
+            </div>
+          </motion.div>
+
+          {/* ── Bande stats desktop ── */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.8 }}
+            className="relative z-10 border-t border-white/[0.06]"
+          >
+            <div className="max-w-[1400px] mx-auto px-12 py-6 flex divide-x divide-white/[0.06]">
+              {[
+                { val: 500, suf: '+',    label: 'Installations' },
+                { val: 98,  suf: '%',    label: 'Satisfaits' },
+                { val: 48,  suf: 'h',    label: 'Livraison' },
+                { val: 2,   suf: ' ans', label: 'Garantie' },
+              ].map((s, i) => (
+                <div key={i} className="flex-1 px-8 text-left first:pl-0 last:pr-0">
+                  <p className="font-display text-3xl text-white leading-none">
+                    <CountUp target={s.val} suffix={s.suf} />
+                  </p>
+                  <p className="font-body text-xs text-brand-muted mt-1">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+        </div>
 
       </section>
+
+      {/* ═══════════ BANDEAU AVANT / APRÈS ═══════════ */}
+      <FadeUp>
+        <div className="relative overflow-hidden" style={{ height: 'clamp(280px, 52vw, 560px)' }}>
+
+          {/* ── Moitié AVANT (gauche) ── */}
+          <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
+            <img
+              src={images.galleryBefore1}
+              alt="Avant installation CarPlay"
+              className="img-cover brightness-[0.75] grayscale-[0.35]"
+              loading="lazy"
+            />
+            <div className="absolute inset-0" style={{
+              background: 'linear-gradient(to right, rgba(7,7,13,0.45) 0%, rgba(7,7,13,0.15) 70%, transparent 100%)'
+            }} />
+            {/* Label AVANT */}
+            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
+              <p className="font-body text-[9px] md:text-[10px] tracking-[4px] uppercase text-white/40 mb-1">Situation</p>
+              <p className="font-display font-semibold text-white/70 leading-none" style={{ fontSize: 'clamp(22px, 3.5vw, 48px)' }}>
+                Avant
+              </p>
+              <p className="font-body text-white/35 text-[11px] md:text-[13px] mt-1.5">Autoradio d'origine</p>
+            </div>
+          </div>
+
+          {/* ── Moitié APRÈS (droite) ── */}
+          <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
+            <img
+              src={images.galleryAfter1}
+              alt="Après installation CarPlay"
+              className="img-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0" style={{
+              background: 'linear-gradient(to left, rgba(7,7,13,0.40) 0%, rgba(7,7,13,0.10) 70%, transparent 100%)'
+            }} />
+            {/* Label APRÈS */}
+            <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 text-right">
+              <p className="font-body text-[9px] md:text-[10px] tracking-[4px] uppercase mb-1" style={{ color: 'rgba(212,168,85,0.6)' }}>Résultat</p>
+              <p className="font-display font-semibold leading-none" style={{
+                fontSize: 'clamp(22px, 3.5vw, 48px)',
+                background: 'linear-gradient(110deg, #d4a855, #f0cc7a)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Après
+              </p>
+              <p className="font-body text-white/50 text-[11px] md:text-[13px] mt-1.5">CarPlay Premium intégré</p>
+            </div>
+          </div>
+
+          {/* ── Séparateur central doré ── */}
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[2px]"
+            style={{ background: 'linear-gradient(to bottom, transparent 0%, #d4a855 20%, #f0cc7a 50%, #d4a855 80%, transparent 100%)' }}
+          />
+
+          {/* ── Pastille centrale ── */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20
+                          w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(135deg, #d4a855, #f0cc7a)',
+              boxShadow: '0 0 0 4px rgba(7,7,13,0.9), 0 0 24px rgba(212,168,85,0.45)',
+            }}
+          >
+            <ArrowRight size={14} className="text-black -rotate-[135deg] absolute" style={{ left: '6px', top: '50%', transform: 'translateY(-50%) rotate(180deg)' }} />
+            <ArrowRight size={14} className="text-black absolute" style={{ right: '6px', top: '50%', transform: 'translateY(-50%)' }} />
+          </div>
+
+          {/* ── Titre flottant au centre haut ── */}
+          <div className="absolute top-6 md:top-8 left-1/2 -translate-x-1/2 z-10 text-center whitespace-nowrap">
+            <p className="font-body text-[9px] md:text-[10px] tracking-[4px] uppercase text-white/40 mb-1">Transformation</p>
+            <p className="font-display font-semibold text-white" style={{ fontSize: 'clamp(16px, 2.2vw, 28px)', letterSpacing: '0.04em' }}>
+              La différence TixyCar<span style={{
+                background: 'linear-gradient(110deg, #d4a855, #f0cc7a)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>play</span>
+            </p>
+          </div>
+
+        </div>
+      </FadeUp>
 
       {/* ═══════════ BESTSELLER ═══════════ */}
       {bestseller && <section className="py-10 sm:py-16 md:py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>

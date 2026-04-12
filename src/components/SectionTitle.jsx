@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useIntersection } from '../hooks/useScroll'
 
-export default function SectionTitle({ subtitle, title, accentColor = '#00e5ff', align = 'center' }) {
+export default function SectionTitle({ subtitle, title, accentColor = '#d4a855', align = 'center' }) {
   const [ref, inView] = useIntersection({ threshold: 0.3 })
   return (
     <div ref={ref} className={`mb-14 ${align === 'center' ? 'text-center' : 'text-left'}`}>

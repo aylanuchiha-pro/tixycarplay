@@ -1,0 +1,5 @@
+La chaque partie est différente, refait les autres parties pour quelle soit visuellement similaire a celle de carplay filaire. Pareil adapte la police pour que ce soit la meme partout. 
+
+Pour le hero sur mobile, carplay filaire carplay intégré et camera faut les mettres juste au dessus du bouton. Baisse aussi legerement le titre.
+
+sur la page d'accueil, refait la partie caméra incluse, enfaite il faut pouvoir rediriger vers accesoire. Il faut que ce soit plus petit deja sur telephone pas que ca prenne toute la place, et il faut montrer au gens que on fait aussi des caméra de recul quoi. Ensuite pour chaque partie sur telephone, plutot que de montrer les articles bloc par bloc, il faut les montrer deux par deux, comme sur la page d'accueil.

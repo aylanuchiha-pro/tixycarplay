@@ -25,7 +25,7 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Bebas Neue"', 'sans-serif'],
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
         body:    ['"Outfit"', 'sans-serif'],
       },
       boxShadow: {

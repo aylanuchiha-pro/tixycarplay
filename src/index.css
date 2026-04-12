@@ -7,7 +7,7 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,229,255,0.25) transparent;
+  scrollbar-color: rgba(212,168,85,0.30) transparent;
 }
 
 body {
@@ -16,6 +16,8 @@ body {
   color: #eeeef5;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* ─── Aurora de fond ─── */
@@ -26,9 +28,9 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 90% 55% at 18% -8%,  rgba(0, 229, 255, 0.045) 0%, transparent 65%),
-    radial-gradient(ellipse 70% 45% at 82% 108%, rgba(124, 58, 237, 0.055) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 35% at 50%  50%,  rgba(212, 168, 85, 0.018) 0%, transparent 70%);
+    radial-gradient(ellipse 90% 55% at 18% -8%,  rgba(212, 168, 85, 0.055) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 45% at 82% 108%, rgba(240, 204, 122, 0.040) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 35% at 50%  50%,  rgba(184, 137, 42, 0.022) 0%, transparent 70%);
 }
 
 ::selection {
@@ -39,7 +41,7 @@ body::before {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, rgba(0,229,255,0.35), rgba(124,58,237,0.35));
+  background: linear-gradient(to bottom, rgba(212,168,85,0.40), rgba(184,137,42,0.35));
   border-radius: 4px;
 }
 
