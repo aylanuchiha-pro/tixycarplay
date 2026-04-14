@@ -81,15 +81,15 @@ export default function CartDrawer() {
             {/* ── En-tête ── */}
             <div
               className="flex items-center justify-between px-6 py-5"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+              style={{ borderBottom: '1px solid rgba(212,168,85,0.10)' }}
             >
               <div className="flex items-center gap-3">
-                <ShoppingCart size={18} className="text-brand-cyan" />
+                <ShoppingCart size={18} style={{ color: '#d4a855' }} />
                 <h2 className="font-display text-lg tracking-wider text-white">MON PANIER</h2>
                 {itemCount > 0 && (
                   <span
                     className="w-5 h-5 rounded-full text-[11px] font-bold text-black flex items-center justify-center"
-                    style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
+                    style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a)' }}
                   >
                     {itemCount}
                   </span>
@@ -104,16 +104,17 @@ export default function CartDrawer() {
             </div>
 
             {/* ── Corps ── */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="flex-1 overflow-y-auto px-5 py-4">
               {fetching ? (
                 /* Skeleton loader */
                 <div className="flex flex-col gap-4 mt-2">
                   {[1, 2].map((i) => (
                     <div key={i} className="flex gap-4 animate-pulse">
-                      <div className="w-16 h-16 rounded-xl bg-white/[0.05] flex-shrink-0" />
-                      <div className="flex-1 space-y-2 pt-1">
-                        <div className="h-3 bg-white/[0.06] rounded w-3/4" />
+                      <div className="w-20 h-20 rounded-xl bg-white/[0.05] flex-shrink-0" />
+                      <div className="flex-1 space-y-2.5 pt-2">
+                        <div className="h-3.5 bg-white/[0.06] rounded w-3/4" />
                         <div className="h-3 bg-white/[0.04] rounded w-1/2" />
+                        <div className="h-3 bg-white/[0.04] rounded w-1/3" />
                       </div>
                     </div>
                   ))}
@@ -123,26 +124,30 @@ export default function CartDrawer() {
                 <div className="flex flex-col items-center justify-center h-full text-center gap-4 py-20">
                   <div
                     className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                    style={{ background: 'rgba(0,229,255,0.08)', border: '1px solid rgba(0,229,255,0.15)' }}
+                    style={{ background: 'rgba(212,168,85,0.08)', border: '1px solid rgba(212,168,85,0.18)' }}
                   >
-                    <Package size={24} className="text-brand-cyan opacity-60" />
+                    <Package size={24} style={{ color: '#d4a855', opacity: 0.7 }} />
                   </div>
                   <p className="font-body text-brand-muted text-sm">Votre panier est vide</p>
                   <button
                     onClick={closeCart}
-                    className="text-brand-cyan text-sm font-semibold hover:underline"
+                    className="text-sm font-semibold hover:underline"
+                    style={{ color: '#d4a855' }}
                   >
                     Continuer les achats
                   </button>
                 </div>
               ) : (
                 /* Liste des articles */
-                <ul className="flex flex-col gap-4 mt-2">
+                <ul className="flex flex-col gap-1 mt-2">
                   <AnimatePresence initial={false}>
                     {lines.map((line) => {
-                      const price     = parseFloat(line.merchandise?.priceV2?.amount ?? 0)
-                      const lineTotal = (price * line.quantity).toFixed(2)
+                      const price      = parseFloat(line.merchandise?.priceV2?.amount ?? 0)
+                      const lineTotal  = (price * line.quantity).toFixed(2)
                       const isRemoving = removing === line.id
+                      const imgUrl     = line.merchandise?.product?.featuredImage?.url
+                      const imgAlt     = line.merchandise?.product?.featuredImage?.altText
+                        ?? line.merchandise?.product?.title ?? 'Produit'
 
                       return (
                         <motion.li
@@ -150,24 +155,28 @@ export default function CartDrawer() {
                           initial={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0 }}
                           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                          className="flex items-start gap-4 py-4 overflow-hidden"
+                          className="flex items-center gap-4 py-4 overflow-hidden"
                           style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
                         >
-                          {/* Icône produit */}
-                          <div
-                            className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ background: 'rgba(0,229,255,0.07)', border: '1px solid rgba(0,229,255,0.12)' }}
-                          >
-                            <ShoppingCart size={16} className="text-brand-cyan opacity-60" />
+                          {/* Image produit */}
+                          <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0"
+                            style={{ border: '1px solid rgba(212,168,85,0.15)', background: 'rgba(255,255,255,0.03)' }}>
+                            {imgUrl ? (
+                              <img src={imgUrl} alt={imgAlt} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <ShoppingCart size={18} style={{ color: '#d4a855', opacity: 0.5 }} />
+                              </div>
+                            )}
                           </div>
 
                           {/* Infos */}
                           <div className="flex-1 min-w-0">
-                            <p className="font-display text-sm tracking-wide text-white truncate">
+                            <p className="font-display text-[13px] tracking-wide text-white leading-snug line-clamp-2">
                               {line.merchandise?.product?.title ?? 'Produit'}
                             </p>
                             {line.merchandise?.title && line.merchandise.title !== 'Default Title' && (
-                              <p className="font-body text-[11px] text-brand-muted mt-0.5">
+                              <p className="font-body text-xs text-brand-muted mt-0.5">
                                 {line.merchandise.title}
                               </p>
                             )}
@@ -175,7 +184,7 @@ export default function CartDrawer() {
                               <span className="font-body text-xs text-brand-muted">
                                 Qté : {line.quantity}
                               </span>
-                              <span className="font-display text-sm" style={{ color: '#00e5ff' }}>
+                              <span className="font-display text-sm font-semibold" style={{ color: '#d4a855' }}>
                                 {lineTotal}€
                               </span>
                             </div>
@@ -187,7 +196,7 @@ export default function CartDrawer() {
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleRemove(line.id)}
                             disabled={!!removing}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 transition-all disabled:opacity-40"
+                            className="w-9 h-9 flex items-center justify-center rounded-lg flex-shrink-0 transition-all disabled:opacity-40"
                             style={{
                               background: 'rgba(239,68,68,0.08)',
                               border: '1px solid rgba(239,68,68,0.18)',
@@ -196,7 +205,7 @@ export default function CartDrawer() {
                           >
                             {isRemoving
                               ? <span className="w-3 h-3 border-2 border-red-400/40 border-t-red-400 rounded-full animate-spin" />
-                              : <Trash2 size={13} className="text-red-400" />
+                              : <Trash2 size={14} className="text-red-400" />
                             }
                           </motion.button>
                         </motion.li>
@@ -210,14 +219,14 @@ export default function CartDrawer() {
             {/* ── Pied de page ── */}
             {lines.length > 0 && (
               <div
-                className="px-6 py-5 flex flex-col gap-3"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                className="px-5 py-5 flex flex-col gap-3"
+                style={{ borderTop: '1px solid rgba(212,168,85,0.10)' }}
               >
                 {/* Sous-total */}
                 {total && (
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-body text-sm text-brand-muted">Sous-total</span>
-                    <span className="font-display text-lg text-white">
+                    <span className="font-display text-xl text-white">
                       {parseFloat(total.amount).toFixed(2)}€
                     </span>
                   </div>
@@ -229,10 +238,11 @@ export default function CartDrawer() {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleCheckout}
                   disabled={!checkoutUrl}
-                  className="w-full py-4 rounded-xl font-bold text-[15px] text-black flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
+                  className="w-full py-4 rounded-xl font-bold text-[15px] text-black flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+                  style={{ background: 'linear-gradient(135deg, #d4a855, #f0cc7a 50%, #d4a855)', backgroundSize: '200% auto', boxShadow: '0 4px 24px rgba(212,168,85,0.25)' }}
                 >
-                  Commander <ArrowRight size={16} />
+                  <span className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%)' }} />
+                  <span className="relative z-10 flex items-center gap-2">Commander <ArrowRight size={16} /></span>
                 </motion.button>
 
                 {/* Lien continuer */}

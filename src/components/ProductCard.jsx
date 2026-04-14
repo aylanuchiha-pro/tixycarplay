@@ -7,9 +7,9 @@ import { useShopifyCart } from '../hooks/useShopifyCart'
 
 /* Couleurs accent selon variante */
 const ACCENTS = {
-  filaire:    { main: '#00e5ff', dark: '#00b8d4', gradient: 'linear-gradient(135deg, #00e5ff, #06b6d4)' },
-  integre:    { main: '#a855f7', dark: '#7c3aed', gradient: 'linear-gradient(135deg, #7c3aed, #a855f7)' },
-  accessoire: { main: '#d4a855', dark: '#b8892a', gradient: 'linear-gradient(135deg, #d4a855, #f0cc7a)' },
+  filaire:    { main: '#d4a855', dark: '#b8892a', gradient: 'linear-gradient(135deg, #d4a855, #f0cc7a)' },
+  integre:    { main: '#d4a855', dark: '#b8892a', gradient: 'linear-gradient(135deg, #d4a855, #f0cc7a)' },
+  accessoire: { main: '#f5c542', dark: '#d4a030', gradient: 'linear-gradient(135deg, #f5c542, #f59e0b)' },
 }
 
 const ProductCard = forwardRef(function ProductCard({ product, index = 0, onTuto, variant = 'filaire' }, forwardedRef) {
@@ -38,7 +38,7 @@ const ProductCard = forwardRef(function ProductCard({ product, index = 0, onTuto
   }
 
   return (
-    <Link ref={forwardedRef} to={`/produit/${product.shopifyHandle || product.id}`} className="block h-full">
+    <Link ref={forwardedRef} to={`/produit/${product.shopifyHandle || product.id}`} state={{ type: variant }} className="block h-full">
       <motion.div
         ref={intersectionRef}
         initial={{ opacity: 0, y: 48 }}
@@ -211,12 +211,7 @@ const ProductCard = forwardRef(function ProductCard({ product, index = 0, onTuto
             <div className="flex items-center justify-between mt-auto pt-1">
               <span
                 className="font-display text-[20px] sm:text-[26px] leading-none"
-                style={variant === 'accessoire' ? {
-                  background: 'linear-gradient(110deg, #b8892a, #f0cc7a, #d4a855)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                } : { color: ac.main }}
+                style={{ color: ac.main }}
               >
                 {displayPrice?.toFixed(2)}€
               </span>
@@ -229,12 +224,12 @@ const ProductCard = forwardRef(function ProductCard({ product, index = 0, onTuto
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); onTuto?.(product) }}
                     className="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
                     style={{
-                      background: 'rgba(124,58,237,0.12)',
-                      border: '1px solid rgba(124,58,237,0.25)',
+                      background: 'rgba(212,168,85,0.10)',
+                      border: '1px solid rgba(212,168,85,0.25)',
                     }}
                     title="Voir le tuto"
                   >
-                    <Play size={13} style={{ color: '#a78bfa' }} />
+                    <Play size={13} style={{ color: '#d4a855' }} />
                   </motion.button>
                 )}
                 {product.shopifyHandle && (

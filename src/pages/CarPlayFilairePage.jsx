@@ -104,17 +104,22 @@ export default function CarPlayFilairePage() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] h-72 animate-pulse" />
               ))}
             </div>
           ) : shown.length === 0 ? (
             <div className="py-20 text-center">
-              <p className="font-body text-brand-muted text-sm">Aucun produit pour « {search} ».</p>
+              <p className="font-body text-brand-muted text-sm mb-3">Aucun produit ne correspond à « {search} ».</p>
+              <p className="font-body text-brand-muted text-sm">
+                Vous ne trouvez pas ce que vous cherchez ?{' '}
+                <Link to="/contact" className="hover:underline" style={{ color: '#d4a855' }}>Contactez-nous</Link>
+                , on pourra peut-être vous le trouver.
+              </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
               <AnimatePresence mode="popLayout">
                 {shown.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} variant="filaire" />

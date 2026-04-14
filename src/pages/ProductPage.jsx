@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useLocation } from 'react-router-dom'
 import {
   ArrowLeft, ShoppingCart, Check, Camera, Star,
   Package, ChevronRight, Play,
@@ -12,8 +12,8 @@ import { useShopifyCart } from '../hooks/useShopifyCart'
 
 /* ─── Couleurs par type ─── */
 const ACCENT = {
-  filaire:    { color: '#00e5ff', gradient: 'linear-gradient(135deg,#00e5ff,#06b6d4)', label: 'CarPlay Filaire',  to: '/carplay-filaire' },
-  integre:    { color: '#a855f7', gradient: 'linear-gradient(135deg,#7c3aed,#a855f7)', label: 'CarPlay Intégré', to: '/carplay-integre' },
+  filaire:    { color: '#d4a855', gradient: 'linear-gradient(135deg,#d4a855,#f0cc7a)', label: 'CarPlay Filaire',  to: '/carplay-filaire' },
+  integre:    { color: '#d4a855', gradient: 'linear-gradient(135deg,#d4a855,#f0cc7a)', label: 'CarPlay Intégré', to: '/carplay-integre' },
   accessoire: { color: '#f5c542', gradient: 'linear-gradient(135deg,#f5c542,#f59e0b)', label: 'Accessoires',     to: '/accessoires'     },
 }
 
@@ -99,7 +99,9 @@ function CameraOption({ cameraProduct, selected, onToggle }) {
 
 /* ════════════════════════════════════════════════════════ */
 export default function ProductPage() {
-  const { id } = useParams()
+  const { id }       = useParams()
+  const location     = useLocation()
+  const stateType    = location.state?.type   // transmis depuis ProductCard via Link state
 
   const [product,        setProduct]        = useState(null)
   const [related,        setRelated]        = useState([])
@@ -121,11 +123,14 @@ export default function ProductPage() {
     getProductByHandle(id)
       .then((node) => {
         if (cancelled || !node) return
-        const fallbackType = node.productType
-          ? node.productType.toLowerCase().includes('integr') ? 'integre'
-          : node.productType.toLowerCase().includes('access') ? 'accessoire'
-          : 'filaire'
-          : 'filaire'
+        // Priorité : type transmis depuis la page listing via Link state
+        const fallbackType = stateType ?? (
+          node.productType
+            ? node.productType.toLowerCase().includes('integr') ? 'integre'
+            : node.productType.toLowerCase().includes('access') ? 'accessoire'
+            : 'filaire'
+            : 'filaire'
+        )
         setProduct(normalizeShopifyProduct(node, fallbackType))
       })
       .catch(() => {})
@@ -179,7 +184,7 @@ export default function ProductPage() {
           <h1 className="font-display text-4xl text-white mb-3">Produit introuvable</h1>
           <p className="font-body text-brand-muted mb-8 text-sm">Ce produit n'existe pas ou a été retiré.</p>
           <Link to="/" className="px-8 py-3 rounded-xl font-semibold text-sm text-black inline-block"
-            style={{ background: 'linear-gradient(135deg,#00e5ff,#06b6d4)' }}>
+            style={{ background: 'linear-gradient(135deg,#d4a855,#f0cc7a)' }}>
             Retour à l'accueil
           </Link>
         </div>
@@ -272,7 +277,7 @@ export default function ProductPage() {
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={() => setTutoOpen(true)}
                 className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all"
-                style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)', color: '#a78bfa' }}
+                style={{ background: 'rgba(212,168,85,0.08)', border: '1px solid rgba(212,168,85,0.25)', color: '#d4a855' }}
               >
                 <Play size={14} /> Voir le tutoriel d'installation
               </motion.button>
@@ -436,7 +441,7 @@ export default function ProductPage() {
                 Voir tout <ChevronRight size={12} />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
               {related.map((p, i) => (
                 <ProductCard key={p.id} product={p} index={i}
                   variant={p.type === 'integre' ? 'integre' : p.type === 'accessoire' ? 'accessoire' : 'filaire'} />

@@ -3,3 +3,5 @@ La chaque partie est différente, refait les autres parties pour quelle soit vis
 Pour le hero sur mobile, carplay filaire carplay intégré et camera faut les mettres juste au dessus du bouton. Baisse aussi legerement le titre.
 
 sur la page d'accueil, refait la partie caméra incluse, enfaite il faut pouvoir rediriger vers accesoire. Il faut que ce soit plus petit deja sur telephone pas que ca prenne toute la place, et il faut montrer au gens que on fait aussi des caméra de recul quoi. Ensuite pour chaque partie sur telephone, plutot que de montrer les articles bloc par bloc, il faut les montrer deux par deux, comme sur la page d'accueil.
+
+a la fin de carplay intégré, au lieu de mettre "trouver votre modele" met qlq chose comme vous ne trouvez pas votre modele ? Contactez nous, on pourra peut etre vous le trouver. Et pareil quand le client fait une recherche et aucun produit ne correspond a sa recherche. 

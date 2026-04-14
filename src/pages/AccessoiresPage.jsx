@@ -117,7 +117,7 @@ export default function AccessoiresPage() {
         <div className="max-w-[1400px] mx-auto">
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.06] h-72 animate-pulse" />
               ))}
@@ -134,7 +134,7 @@ export default function AccessoiresPage() {
             </motion.div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
                 <AnimatePresence mode="popLayout">
                   {shown.map((p, i) => (
                     <ProductCard key={p.id} product={p} index={i} variant="accessoire" />

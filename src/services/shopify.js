@@ -363,7 +363,11 @@ export async function getCart(cartId) {
                   id
                   title
                   priceV2 { amount currencyCode }
-                  product { title handle }
+                  product {
+                    title
+                    handle
+                    featuredImage { url altText }
+                  }
                 }
               }
             }
@@ -396,7 +400,11 @@ export async function removeCartLines(cartId, lineIds) {
                     id
                     title
                     priceV2 { amount currencyCode }
-                    product { title handle }
+                    product {
+                      title
+                      handle
+                      featuredImage { url altText }
+                    }
                   }
                 }
               }

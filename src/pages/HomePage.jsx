@@ -162,7 +162,7 @@ export default function HomePage() {
           {/* ── TEXTE HAUT centré ── */}
           <motion.div
             className="relative z-10 px-6 text-center"
-            style={{ paddingTop: '80px' }}
+            style={{ paddingTop: '140px' }}
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
@@ -176,7 +176,7 @@ export default function HomePage() {
             </div>
 
             {/* Titre */}
-            <h1 className="font-display font-semibold leading-[0.92] tracking-wide mb-2" style={{ fontSize: 'clamp(52px, 16vw, 80px)' }}>
+            <h1 className="font-display font-semibold leading-[0.92] tracking-wide mb-2" style={{ fontSize: 'clamp(44px, 13vw, 72px)' }}>
               <span className="text-white/90">Tixy</span><span style={{
                 background: 'linear-gradient(110deg, #b8892a 0%, #f0cc7a 35%, #d4a855 55%, #f5e09a 80%, #c9a44a 100%)',
                 backgroundSize: '200% auto',
@@ -187,28 +187,28 @@ export default function HomePage() {
             </h1>
 
             {/* Sous-titre italique */}
-            <p className="font-display italic text-white/45 mb-3" style={{ fontSize: 'clamp(15px, 4.5vw, 20px)', letterSpacing: '0.02em' }}>
+            <p className="font-display italic text-white/45 mb-3" style={{ fontSize: 'clamp(14px, 4vw, 18px)', letterSpacing: '0.02em' }}>
               Le meilleur du CarPlay, chez vous.
             </p>
 
             {/* Description */}
             <p className="font-body text-white/50 text-[12px] leading-relaxed max-w-[260px] mx-auto">
-              Boîtier plug&amp;play ou autoradio intégré —{' '}
-              <span className="text-white/70">on se déplace chez vous</span>.
+              CarPlay dans votre voiture en quelques minutes —{' '}
+              <span className="text-white/70">on se déplace chez vous en Île-de-France</span>.
             </p>
           </motion.div>
 
           {/* Espace central — l'image de fond s'y révèle */}
           <div className="flex-1" />
 
-          {/* ── BADGES + BOUTONS BAS ── */}
+          {/* ── BOUTONS BAS ── */}
           <motion.div
-            className="relative z-10 px-5 pb-6 flex flex-col gap-3"
+            className="relative z-10 px-5 pb-6 flex flex-col gap-2.5"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Badges juste au-dessus des boutons */}
-            <div className="flex flex-wrap justify-center gap-2 mb-1">
+            {/* Badges juste au-dessus du bouton */}
+            <div className="flex flex-wrap justify-center gap-1.5 mb-0.5">
               {[
                 { label: 'CarPlay Filaire',  color: '#d4a855', bg: 'rgba(212,168,85,0.08)',  border: 'rgba(212,168,85,0.22)' },
                 { label: 'CarPlay Intégré',  color: '#f0cc7a', bg: 'rgba(240,204,122,0.07)', border: 'rgba(240,204,122,0.20)' },
@@ -331,8 +331,8 @@ export default function HomePage() {
                 transition={{ delay: 0.7, duration: 0.8 }}
                 className="font-body text-brand-muted text-[15px] leading-relaxed mb-8 max-w-[440px]"
               >
-                Boîtier plug&amp;play ou autoradio intégré —{' '}
-                <span className="text-white/75">on se déplace chez vous</span>.
+                CarPlay dans votre voiture en quelques minutes —{' '}
+                <span className="text-white/75">on se déplace chez vous en Île-de-France</span>.
               </motion.p>
 
               {/* CTAs */}
@@ -723,21 +723,61 @@ export default function HomePage() {
               {/* Bordure dégradée */}
               <div className="absolute inset-0 rounded-3xl" style={{ padding: '1px', background: 'linear-gradient(135deg, rgba(0,229,255,0.25), rgba(124,58,237,0.15), transparent)', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
 
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center p-8 md:p-12">
+              {/* ── VERSION MOBILE : compact ── */}
+              <div className="md:hidden relative z-10 p-5">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(0,229,255,0.10)', border: '1px solid rgba(0,229,255,0.18)' }}>
+                    <Camera size={20} className="text-brand-cyan" />
+                  </div>
+                  <div>
+                    <p className="font-body text-[10px] tracking-[2px] uppercase text-brand-cyan font-semibold mb-0.5">Caméra de recul</p>
+                    <h3 className="font-display text-white tracking-wider leading-none" style={{ fontSize: '20px' }}>
+                      ON FAIT AUSSI ÇA
+                    </h3>
+                  </div>
+                </div>
+                <p className="font-body text-brand-muted text-xs leading-relaxed mb-4">
+                  Caméra incluse avec nos CarPlay intégrés, ou disponible séparément en accessoire — installation à domicile en Île-de-France.
+                </p>
+                <div className="flex gap-2">
+                  <Link to="/accessoires" className="flex-1">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-xs text-black"
+                      style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
+                    >
+                      <Camera size={13} /> Voir les caméras
+                    </motion.button>
+                  </Link>
+                  <Link to="/carplay-integre" className="flex-1">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-semibold text-xs text-white border border-white/10"
+                      style={{ background: 'rgba(255,255,255,0.04)' }}
+                    >
+                      CarPlay intégré <ArrowRight size={12} />
+                    </motion.button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* ── VERSION DESKTOP : layout complet ── */}
+              <div className="hidden md:grid md:grid-cols-2 gap-8 items-center p-12 relative z-10">
                 {/* Texte */}
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 border border-brand-cyan/20" style={{ background: 'rgba(0,229,255,0.06)' }}>
                     <Camera size={13} className="text-brand-cyan" />
-                    <span className="text-[11px] tracking-[2px] uppercase text-brand-cyan font-semibold">Service inclus</span>
+                    <span className="text-[11px] tracking-[2px] uppercase text-brand-cyan font-semibold">Incluse ou en accessoire</span>
                   </div>
 
                   <h2 className="font-display text-white tracking-wider leading-none mb-4" style={{ fontSize: 'clamp(28px,4vw,52px)' }}>
                     CAMÉRA DE<br />
-                    <span className="text-gradient">RECUL INCLUSE</span>
+                    <span className="text-gradient">RECUL</span>
                   </h2>
 
                   <p className="font-body text-brand-muted text-sm leading-relaxed max-w-[380px] mb-8">
-                    Plusieurs de nos CarPlay intégrés sont livrés avec une caméra de recul HD.
+                    Incluse sur plusieurs de nos CarPlay intégrés, ou disponible en accessoire séparé.
                     On se charge de l'installation à domicile — câblage propre, angle réglé, image nette dès la marche arrière.
                   </p>
 
@@ -757,21 +797,21 @@ export default function HomePage() {
                   </div>
 
                   <div className="flex flex-wrap gap-3">
-                    <Link to="/carplay-integre">
+                    <Link to="/accessoires">
                       <motion.button
                         whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                         className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-black"
                         style={{ background: 'linear-gradient(135deg, #00e5ff, #06b6d4)' }}
                       >
-                        <Camera size={14} /> Voir les CarPlay compatibles
+                        <Camera size={14} /> Voir les caméras
                       </motion.button>
                     </Link>
-                    <Link to="/installation">
+                    <Link to="/carplay-integre">
                       <motion.button
                         whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                         className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white border border-white/10 hover:bg-white/5 transition-all"
                       >
-                        Réserver l'installation <ArrowRight size={13} />
+                        CarPlay intégré inclus <ArrowRight size={13} />
                       </motion.button>
                     </Link>
                   </div>
@@ -789,7 +829,7 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.4 }}
-                    className="hidden sm:flex absolute -bottom-4 -left-4 px-4 py-3 rounded-2xl border border-brand-cyan/20 items-center gap-3"
+                    className="flex absolute -bottom-4 -left-4 px-4 py-3 rounded-2xl border border-brand-cyan/20 items-center gap-3"
                     style={{ background: 'rgba(7,7,13,0.92)', backdropFilter: 'blur(12px)' }}
                   >
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(0,229,255,0.1)' }}>
