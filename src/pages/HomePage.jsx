@@ -495,7 +495,7 @@ export default function HomePage() {
       </FadeUp>
 
       {/* ═══════════ BESTSELLER ═══════════ */}
-      {bestseller && <section className="py-10 sm:py-16 md:py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>
+      {bestseller && <section className="py-5 sm:py-16 md:py-20 px-5 md:px-8 border-b border-white/[0.05]" style={{ background: 'linear-gradient(180deg, #0a0a14 0%, #07070d 100%)' }}>
         <div className="max-w-[1400px] mx-auto">
 
           {/* En-tête de section */}
@@ -525,7 +525,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Image */}
-                <div className="h-80 md:h-[420px] img-shimmer">
+                <div className="h-56 md:h-[420px] img-shimmer">
                   <img
                     src={bestseller.image}
                     alt={bestseller.nom}
@@ -562,7 +562,7 @@ export default function HomePage() {
                 {bestseller.nom}
               </h2>
 
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-5">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 sm:mb-5">
                 <div className="flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} size={15} fill="#f5c542" className="text-brand-gold" />
@@ -577,7 +577,7 @@ export default function HomePage() {
               </div>
 
               {/* Prix */}
-              <div className="flex items-end gap-4 mb-7">
+              <div className="flex items-end gap-4 mb-4 sm:mb-7">
                 <span className="font-display text-5xl md:text-6xl text-brand-cyan leading-none">
                   {bestseller.prix.toFixed(2)}€
                 </span>
@@ -592,7 +592,7 @@ export default function HomePage() {
               </div>
 
               {/* Bénéfices */}
-              <div className="flex flex-col gap-2.5 mb-8">
+              <div className="hidden sm:flex flex-col gap-2.5 mb-8">
                 {[
                   '7" IPS 1024×600 — image nette même en plein soleil',
                   'Compatible Apple CarPlay & Android Auto filaire',
@@ -659,13 +659,13 @@ export default function HomePage() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => bestseller?.shopifyHandle && addToCart(bestseller, { redirectToCheckout: true, quantity: qty })}
                 disabled={cartLoading}
-                className="w-full h-12 rounded-xl font-semibold text-[14px] text-white border border-white/10 hover:bg-white/5 transition-all mb-7 disabled:opacity-60 disabled:cursor-wait"
+                className="hidden sm:block w-full h-12 rounded-xl font-semibold text-[14px] text-white border border-white/10 hover:bg-white/5 transition-all mb-7 disabled:opacity-60 disabled:cursor-wait"
               >
                 Acheter maintenant
               </motion.button>
 
               {/* Trust signals */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="hidden sm:grid grid-cols-4 gap-3">
                 {[
                   { icon: Truck,     label: 'Livraison',  sub: 'Gratuite 48h' },
                   { icon: Shield,    label: 'Garantie',   sub: '2 ans' },
@@ -686,9 +686,9 @@ export default function HomePage() {
       </section>}
 
       {/* ═══════════ TRUST BAR ═══════════ */}
-      <section className="py-8 md:py-14 border-y border-white/[0.04]">
-        <div className="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className="hidden md:block py-14 border-y border-white/[0.04]">
+        <div className="max-w-[1400px] mx-auto px-8">
+          <div className="grid grid-cols-4 gap-6">
             {[
               { icon: Truck,      label: 'Livraison 48h',  desc: 'France métropolitaine' },
               { icon: Shield,     label: 'Garantie 2 ans', desc: 'Installation Premium' },
@@ -847,12 +847,72 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 01 — CARPLAY FILAIRE ═══════════ */}
-      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8 overflow-hidden">
+      {/* ═══════════ 01 — CARPLAY INTÉGRÉ ═══════════ */}
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex items-end justify-between mb-8 md:mb-14">
             <FadeUp className="relative">
               <SectionNum num="01" />
+              <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-[#a855f7] mb-2 sm:mb-3">Sur mesure</p>
+              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
+                CARPLAY INTÉGRÉ
+              </h2>
+            </FadeUp>
+            <FadeUp delay={0.15} className="pb-1">
+              <Link to="/carplay-integre">
+                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-xs sm:text-sm text-brand-muted hover:text-white transition-colors cursor-pointer whitespace-nowrap">
+                  Voir tout <ArrowRight size={13} />
+                </motion.span>
+              </Link>
+            </FadeUp>
+          </div>
+          {produitsIntegre.length > 0 && (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                {produitsIntegre.slice(0, 4).map((p, i) => (
+                  <div key={p.id} className={i >= 2 ? 'hidden sm:block' : ''}>
+                    <ProductCard product={p} index={i} variant="integre" onTuto={setTutoProduct} />
+                  </div>
+                ))}
+              </div>
+              <FadeUp delay={0.2} className={`text-center mt-6 ${produitsIntegre.length <= 4 ? 'sm:hidden' : ''}`}>
+                <Link to="/carplay-integre">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    className="inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-semibold text-sm text-white border border-[#a855f7]/25 hover:bg-[#a855f7]/[0.06] transition-all"
+                  >
+                    Voir tous les CarPlay intégrés <ArrowRight size={14} style={{ color: '#a855f7' }} />
+                  </motion.button>
+                </Link>
+              </FadeUp>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* ═══════════ BANNIÈRE ═══════════ */}
+      <ParallaxBanner image={images.bgDark}>
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 w-full">
+          <FadeUp>
+            <p className="text-[11px] tracking-[3px] uppercase text-[#a855f7] mb-5">Transformation complète</p>
+            <h2 className="font-display text-white tracking-wider leading-none mb-8" style={{ fontSize: 'clamp(36px,7vw,82px)' }}>
+              REMPLACEZ<br />VOTRE AUTORADIO
+            </h2>
+            <Link to="/carplay-integre">
+              <motion.span whileHover={{ x: 6 }} className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors cursor-pointer">
+                Découvrir les systèmes intégrés <ArrowUpRight size={15} />
+              </motion.span>
+            </Link>
+          </FadeUp>
+        </div>
+      </ParallaxBanner>
+
+      {/* ═══════════ 02 — CARPLAY FILAIRE ═══════════ */}
+      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex items-end justify-between mb-8 md:mb-14">
+            <FadeUp className="relative">
+              <SectionNum num="02" />
               <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-brand-cyan mb-2 sm:mb-3">Plug &amp; Play</p>
               <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
                 CARPLAY FILAIRE
@@ -883,66 +943,6 @@ export default function HomePage() {
                     className="inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-semibold text-sm text-white border border-brand-cyan/25 hover:bg-brand-cyan/[0.06] transition-all"
                   >
                     Voir tous les CarPlay filaires <ArrowRight size={14} className="text-brand-cyan" />
-                  </motion.button>
-                </Link>
-              </FadeUp>
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* ═══════════ BANNIÈRE ═══════════ */}
-      <ParallaxBanner image={images.bgDark}>
-        <div className="max-w-[1400px] mx-auto px-6 md:px-10 w-full">
-          <FadeUp>
-            <p className="text-[11px] tracking-[3px] uppercase text-[#a855f7] mb-5">Transformation complète</p>
-            <h2 className="font-display text-white tracking-wider leading-none mb-8" style={{ fontSize: 'clamp(36px,7vw,82px)' }}>
-              REMPLACEZ<br />VOTRE AUTORADIO
-            </h2>
-            <Link to="/carplay-integre">
-              <motion.span whileHover={{ x: 6 }} className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors cursor-pointer">
-                Découvrir les systèmes intégrés <ArrowUpRight size={15} />
-              </motion.span>
-            </Link>
-          </FadeUp>
-        </div>
-      </ParallaxBanner>
-
-      {/* ═══════════ 02 — CARPLAY INTÉGRÉ ═══════════ */}
-      <section className="py-10 sm:py-16 md:py-24 px-5 md:px-8">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="flex items-end justify-between mb-8 md:mb-14">
-            <FadeUp className="relative">
-              <SectionNum num="02" />
-              <p className="text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[3px] uppercase text-[#a855f7] mb-2 sm:mb-3">Sur mesure</p>
-              <h2 className="font-display text-white tracking-wider leading-none" style={{ fontSize: 'clamp(22px,4.5vw,56px)' }}>
-                CARPLAY INTÉGRÉ
-              </h2>
-            </FadeUp>
-            <FadeUp delay={0.15} className="pb-1">
-              <Link to="/carplay-integre">
-                <motion.span whileHover={{ x: 5 }} className="flex items-center gap-1.5 text-xs sm:text-sm text-brand-muted hover:text-white transition-colors cursor-pointer whitespace-nowrap">
-                  Voir tout <ArrowRight size={13} />
-                </motion.span>
-              </Link>
-            </FadeUp>
-          </div>
-          {produitsIntegre.length > 0 && (
-            <>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-                {produitsIntegre.slice(0, 4).map((p, i) => (
-                  <div key={p.id} className={i >= 2 ? 'hidden sm:block' : ''}>
-                    <ProductCard product={p} index={i} variant="integre" onTuto={setTutoProduct} />
-                  </div>
-                ))}
-              </div>
-              <FadeUp delay={0.2} className={`text-center mt-6 ${produitsIntegre.length <= 4 ? 'sm:hidden' : ''}`}>
-                <Link to="/carplay-integre">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    className="inline-flex items-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-semibold text-sm text-white border border-[#a855f7]/25 hover:bg-[#a855f7]/[0.06] transition-all"
-                  >
-                    Voir tous les CarPlay intégrés <ArrowRight size={14} style={{ color: '#a855f7' }} />
                   </motion.button>
                 </Link>
               </FadeUp>
@@ -1031,7 +1031,7 @@ export default function HomePage() {
             </h2>
           </FadeUp>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {temoignages.map((t, i) => (
+            {temoignages.slice(0, 2).map((t, i) => (
               <FadeUp key={i} delay={i * 0.07}>
                 <div className="p-6 rounded-2xl bg-brand-card border border-white/[0.05] h-full flex flex-col">
                   <div className="flex gap-0.5 mb-4">
